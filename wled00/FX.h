@@ -267,7 +267,7 @@ int getSampleAvg();
 #define FX_MODE_NOISEFIRE              130
 #define FX_MODE_PUDDLEPEAK             131
 #define FX_MODE_NOISEMOVE              132
-#define FX_MODE_2DPLASMA               133
+#define FX_MODE_CYCLEEFFECTS               133
 #define FX_MODE_PERLINMOVE             134
 #define FX_MODE_RIPPLEPEAK             135
 #define FX_MODE_2DFIRENOISE            136
@@ -514,7 +514,7 @@ class WS2812FX {
       _mode[FX_MODE_NOISEFIRE]               = &WS2812FX::mode_noisefire;
       _mode[FX_MODE_PUDDLEPEAK]              = &WS2812FX::mode_puddlepeak;
       _mode[FX_MODE_NOISEMOVE]               = &WS2812FX::mode_noisemove;
-      _mode[FX_MODE_2DPLASMA]                = &WS2812FX::mode_2Dplasma;
+      _mode[FX_MODE_CYCLEEFFECTS]                = &WS2812FX::mode_cycleeffects;
       _mode[FX_MODE_PERLINMOVE]              = &WS2812FX::mode_perlinmove;
       _mode[FX_MODE_RIPPLEPEAK]              = &WS2812FX::mode_ripplepeak;
       _mode[FX_MODE_2DFIRENOISE]             = &WS2812FX::mode_2Dfirenoise;
@@ -765,7 +765,7 @@ class WS2812FX {
       mode_noisefire(void),
       mode_puddlepeak(void),
       mode_noisemove(void),
-      mode_2Dplasma(void),
+      mode_cycleeffects(void),
       mode_perlinmove(void),
       mode_ripplepeak(void),
       mode_2Dfirenoise(void),
@@ -830,6 +830,8 @@ class WS2812FX {
     void blendPixelColor(uint16_t n, uint32_t color, uint8_t blend);
 
     uint32_t _lastPaletteChange = 0;
+    uint32_t _lastEffectChange[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    uint8_t _cycleEffect[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     uint32_t _lastShow = 0;
 
     #ifdef WLED_USE_ANALOG_LEDS
@@ -865,7 +867,7 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Phased","Phased Noise","TwinkleUp","Noise Pal","Sine",
 "Flow","Chunchun","Dancing Shadows","Washing Machine","* Pixels","* Pixelwave","* Juggles","* Matripix","* Gravimeter","* Plasmoid",
 "* Puddles","* Midnoise","* Noisemeter","** Freqwave","** Freqmatrix","** Spectral","* Waterfall","** Freqpixel","** Binmap","** Noisepeak",
-"* Noisefire","* Puddlepeak","** Noisemove","2D Plasma","Perlin Move","* Ripple Peak","Firebase","Squirrels","Fire High Flames","Time Traveller",
+"* Noisefire","* Puddlepeak","** Noisemove","* Cycle Effects","Perlin Move","* Ripple Peak","Firebase","Squirrels","Fire High Flames","Time Traveller",
 "Matrix","White Fusion","** FFT_TEST"
 ])=====";
 
