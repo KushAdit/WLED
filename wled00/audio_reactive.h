@@ -349,6 +349,9 @@ void agcAvg() {                                                     // A simple 
       //fftResult[i] = constrain(map(fftResult[i], 0,  avgChannel[i]*2, 0, 255),0,255);     // AGC map result bin to 8 bits. Can be noisy at low volumes. Experimental.
 
       }
+        for(int i=0; i< 5; i++){
+        fftResultBass[i]=fftResult[i];
+      }
     }
   }  // FFTcode( void * parameter)
 

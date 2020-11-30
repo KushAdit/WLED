@@ -3847,14 +3847,15 @@ uint16_t WS2812FX::mode_gravimeter(void) {                                // Gra
 
   fade_out(240);
 
-  sampleAvg = sampleAvg * SEGMENT.intensity / 255;
-
-  int tempsamp = constrain(sampleAvg*2,0,SEGLEN-1);                       // Keep the sample from overflowing.
+ // sampleAvg = sampleAvg * SEGMENT.intensity / 255;
+  int sound = getSound(SEGMENT.bb, gotSound);
+  gotSound = true;
+  int tempsamp = constrain(sound*2,0,SEGLEN-1);                       // Keep the sample from overflowing.
   uint8_t gravity = 8 - SEGMENT.speed/32;
 
   for (int i=0; i<tempsamp; i++) {
-    uint8_t index = inoise8(i*sampleAvg+millis(), 5000+i*sampleAvg);
-    setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(index, false, PALETTE_SOLID_WRAP, 0), sampleAvg*8));
+    uint8_t index = inoise8(i*sound+millis(), 5000+i*sound);
+    setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(index, false, PALETTE_SOLID_WRAP, 0), sound*8));
   }
 
   if (tempsamp >= topLED)
