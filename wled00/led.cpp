@@ -15,6 +15,7 @@ void setValuesFromMainSeg()
   effectFFT2 = seg.fft2;
   effectFFT3 = seg.fft3;
   effectPalette = seg.palette;
+  effectBass = seg.bass;
 }
 
 
@@ -98,7 +99,7 @@ void colorUpdated(int callMode)
       callMode != NOTIFIER_CALL_MODE_DIRECT_CHANGE && 
       callMode != NOTIFIER_CALL_MODE_NO_NOTIFY) strip.applyToAllSelected = true; //if not from JSON api, which directly sets segments
   
-  bool fxChanged = strip.setEffectConfig(effectCurrent, effectSpeed, effectIntensity, effectFFT1, effectFFT2, effectFFT3, effectPalette);
+  bool fxChanged = strip.setEffectConfig(effectCurrent, effectSpeed, effectIntensity, effectFFT1, effectFFT2, effectFFT3, effectPalette, effectBass);
   bool colChanged = colorChanged();
 
   if (fxChanged || colChanged)

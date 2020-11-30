@@ -60,7 +60,9 @@ void XML_response(AsyncWebServerRequest *request, char* dest)
   oappendi(effectFFT3);
   oappend(SET_F("</f3><fp>"));
   oappendi(effectPalette);
-  oappend(SET_F("</fp><wv>"));
+  oappend(SET_F("</fp><bs>"));
+  oappendi(effectBass);
+  oappend(SET_F("</bs><wv>"));
   if (strip.rgbwMode) {
    oappendi(col[3]);
   } else {
@@ -125,6 +127,8 @@ void URL_response(AsyncWebServerRequest *request)
   oappendi(effectFFT3);
   oappend(SET_F("&FP="));
   oappendi(effectPalette);
+  oappend(SET_F("&BS="));
+  oappendi(effectBass);
 
   obuf = sbuf;
   olen = 0;

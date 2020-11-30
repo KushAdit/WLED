@@ -594,6 +594,8 @@ bool handleSet(AsyncWebServerRequest *request, const String& req, bool apply)
   updateVal(&req, "F3=", &effectFFT3);
   updateVal(&req, "FP=", &effectPalette, 0, strip.getPaletteCount()-1);
 
+  pos = req.indexOf(F("BS="));
+  if (pos > 0) effectBass = (req.charAt(pos+3) != '0');
   //set advanced overlay
   pos = req.indexOf(F("OL="));
   if (pos > 0) {

@@ -4,7 +4,7 @@
  * UDP sync notifier / Realtime / Hyperion / TPM2.NET
  */
 
-#define WLEDPACKETSIZE 29
+#define WLEDPACKETSIZE 30
 #define UDP_IN_MAXSIZE 1472
 
 void notify(byte callMode, bool followUp)
@@ -59,6 +59,7 @@ void notify(byte callMode, bool followUp)
   udpOut[26] = (t >> 16) & 0xFF;
   udpOut[27] = (t >>  8) & 0xFF;
   udpOut[28] = (t >>  0) & 0xFF;
+  udpOut[29] = effectBass;
   
   IPAddress broadcastIp;
   broadcastIp = ~uint32_t(Network.subnetMask()) | uint32_t(Network.gatewayIP());
@@ -206,6 +207,7 @@ void handleNotifications()
     {
       if (udpIn[8] < strip.getModeCount()) effectCurrent = udpIn[8];
       effectSpeed   = udpIn[9];
+      effectBass   = udpIn[29];
       if (udpIn[11] > 2) effectIntensity = udpIn[16];
       if (udpIn[11] > 4 && udpIn[19] < strip.getPaletteCount()) effectPalette = udpIn[19];
     }
