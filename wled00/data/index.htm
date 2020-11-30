@@ -1010,7 +1010,7 @@ input[type=number]::-webkit-outer-spin-button {
     <div class="il">
       <i class="icons sel-icon" onclick="tglHex()">&#xe2b3;</i>
       <select class="btn sel" id="selectPalette" onchange="setPalette()">
-        <option>Default</option>
+        <option>Wheel</option>
         <option>Error!</option>
       </select>
     </div>
@@ -1858,7 +1858,7 @@ function requestJson(command, rinfo = true, verbose = true) {
     }
     else populatePresets(true);
     pmtLast = pmt;
-		var x='',y='<option value="0">Default</option>';
+		var x='',y='<option value="0">Color Wheel</option>';
 		json.effects.shift(); //remove solid
 		for (i in json.effects) json.effects[i] = {id: parseInt(i)+1, name:json.effects[i]};
 		json.effects.sort(compare);
