@@ -6,7 +6,8 @@
  */
 
 #include "wled.h"
-
+#include "soc/timer_group_struct.h"
+#include "soc/timer_group_reg.h"
 //#define FFT_SAMPLING_LOG
 //#define MIC_SAMPLING_LOG
 
@@ -273,8 +274,10 @@ void agcAvg() {                                                     // A simple 
     uint16_t rawMicData = 0;
 
     for(;;) {
-      delay(1);           // DO NOT DELETE THIS LINE! It is needed to give the IDLE(0) task enough time and to keep the watchdog happy.
-      microseconds = micros();
+      //delay(1);           // DO NOT DELETE THIS LINE! It is needed to give the IDLE(0) task enough time and to keep the watchdog happy.
+      TIMERG0.wdt_wprotect=TIMG_WDT_WKEY_VALUE;
+      TIMERG0.wdt_feed=1;
+      TIMERG0.wdt_wprotect=0;microseconds = micros();
       extern double volume;
 
       for(int i=0; i<samples; i++) {
