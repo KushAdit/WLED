@@ -81,6 +81,19 @@
 #define SPEED_FORMULA_L  5 + (50*(255 - SEGMENT.speed))/SEGLEN
 #define RESET_RUNTIME    memset(_segment_runtimes, 0, sizeof(_segment_runtimes))
 
+# define NOISE 35
+# define SAMPLES 10
+# define PEAK_FALL 3
+extern int sAmple[200];
+extern uint8_t sAmplenum;
+extern int sound15msAvg;
+extern int dampSound15msAvg;
+extern int sound15msBass;
+extern int dampSound15msBass;
+extern double fftResultBass[5];
+int getSound(bool b, bool g);
+int getSampleAvg();
+
 // some common colors
 #define RED        (uint32_t)0xFF0000
 #define GREEN      (uint32_t)0x00FF00
