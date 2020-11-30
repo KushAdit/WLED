@@ -796,6 +796,7 @@ class WS2812FX {
       _useRgbw = false,
       _skipFirstMode,
       _triggered;
+    bool gotSound=false;
 
     mode_ptr _mode[MODE_COUNT]; // SRAM footprint: 4 bytes per element
 
