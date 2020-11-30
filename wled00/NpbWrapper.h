@@ -162,7 +162,7 @@
  #define PIXELFEATURE3 P9813BgrFeature
  #define PIXELFEATURE4 NeoGrbwFeature
 #else
- #define PIXELFEATURE3 NeoGrbFeature
+ #define PIXELFEATURE3 NeoBrgFeature
  #define PIXELFEATURE4 NeoGrbwFeature
 #endif
 
