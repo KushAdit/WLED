@@ -4746,7 +4746,7 @@ uint16_t i;
 // fft2 slider == scale (how far away are we from the plasma)
 
 uint16_t WS2812FX::mode_2Dplasma(void) {      // By Andreas Pleschutznig. A work in progress.
-
+/*
 #ifdef ESP32
 
   if (matrixWidth * matrixHeight > SEGLEN) {fade_out(224); return FRAMETIME;}                                 // No, we're not going to overrun the segment.
@@ -4838,7 +4838,7 @@ uint16_t WS2812FX::mode_2Dplasma(void) {      // By Andreas Pleschutznig. A work
   fade_out(224);
 #endif // ESP8266
 
-  return FRAMETIME;
+  return FRAMETIME; */
 } // mode_2Dplasma()
 
 
@@ -4848,9 +4848,9 @@ uint16_t WS2812FX::mode_2Dplasma(void) {      // By Andreas Pleschutznig. A work
 
 uint16_t WS2812FX::mode_2Dfirenoise(void) {   // firenoise2d. By Andrew Tuline. Yet another short routine.
 
-#ifdef ESP32
+//#ifdef ESP32
 
-  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}                 // No, we're not going to overrun the segment.
+//  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}                 // No, we're not going to overrun the segment.
 
   CRGB *leds = (CRGB *)ledData;
 
@@ -4863,26 +4863,26 @@ uint16_t WS2812FX::mode_2Dfirenoise(void) {   // firenoise2d. By Andrew Tuline. 
                                    CRGB::DarkOrange,CRGB::DarkOrange, CRGB::Orange, CRGB::Orange,
                                    CRGB::Yellow, CRGB::Orange, CRGB::Yellow, CRGB::Yellow);
   int a = millis();
-  for (int j=0; j < matrixWidth; j++) {
-    for (int i=0; i < matrixHeight; i++) {
+//  for (int j=0; j < matrixWidth; j++) {
+    for (int i=0; i < SEGLEN; i++) {
 
       // This perlin fire is by Andrew Tuline
-      indexx = inoise8(i*xscale+millis()/4,j*yscale*matrixWidth/255);                                             // We're moving along our Perlin map.
-      leds[XY(i,j)] = ColorFromPalette(currentPalette, min(i*(indexx)>>4, 255), i*255/matrixWidth, LINEARBLEND);  // With that value, look up the 8 bit colour palette value and assign it to the current LED.
+      indexx = inoise8(i*xscale+millis()/4,0);                                             // We're moving along our Perlin map.
+      leds[i] = ColorFromPalette(currentPalette, min(i*(indexx)>>4, 255), i*255, LINEARBLEND);  // With that value, look up the 8 bit colour palette value and assign it to the current LED.
 
 // This perlin fire is my /u/ldirko
-//      leds[XY(i,j)] = ColorFromPalette (currentPalette, qsub8(inoise8 (i * 60 , j * 60+ a , a /3), abs8(j - (matrixHeight-1)) * 255 / (matrixHeight-1)), 255);
+//      leds[XY(i,j)] = ColorFromPalette (currentPalette, qsub8(inoise8 (i * 60 , j * 60+ a , a /3), abs8(j - (SEGLEN-1)) * 255 / (SEGLEN-1)), 255);
 
     } // for i
-  } // for j
+//  } // for j
 
   for (int i=0; i<SEGLEN; i++) {
     setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
   }
 
-#else
-  fade_out(224);
-#endif // ESP8266
+//#else
+//  fade_out(224);
+//#endif // ESP8266
 
   return FRAMETIME;
 } // mode_2Dfirenoise()
@@ -4895,39 +4895,39 @@ uint16_t WS2812FX::mode_2Dfirenoise(void) {   // firenoise2d. By Andrew Tuline. 
 uint16_t WS2812FX::mode_2Dsquaredswirl(void) {  // By: Mark Kriegsman. https://gist.github.com/kriegsman/368b316c55221134b160
                                                 // Modifed by: Andrew Tuline
                                                 // fft3 affects the blur amount.
-#ifdef ESP32
+//#ifdef ESP32
 
-  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
+//  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
 
   CRGB *leds = (CRGB *)ledData;
   const uint8_t kBorderWidth = 2;
 
   fadeToBlackBy(leds, SEGLEN, 24);
   // uint8_t blurAmount = dim8_raw( beatsin8(20,64,128) );  //3,64,192
-  uint8_t blurAmount = SEGMENT.fft3;
-  blur2d(leds, matrixWidth, matrixHeight, blurAmount);
+  uint8_t blurAmount = 250;
+  blur2d(leds, 1, SEGLEN, blurAmount);
 
   // Use two out-of-sync sine waves
-  uint8_t  i = beatsin8(19, kBorderWidth, matrixWidth-kBorderWidth);
-  uint8_t  j = beatsin8(22, kBorderWidth, matrixWidth-kBorderWidth);
-  uint8_t  k = beatsin8(17, kBorderWidth, matrixWidth-kBorderWidth);
-  uint8_t  m = beatsin8(18, kBorderWidth, matrixHeight-kBorderWidth);
-  uint8_t  n = beatsin8(15, kBorderWidth, matrixHeight-kBorderWidth);
-  uint8_t  p = beatsin8(20, kBorderWidth, matrixHeight-kBorderWidth);
+//  uint8_t  i = beatsin8(19, kBorderWidth, matrixWidth-kBorderWidth);
+//  uint8_t  j = beatsin8(22, kBorderWidth, matrixWidth-kBorderWidth);
+//  uint8_t  k = beatsin8(17, kBorderWidth, matrixWidth-kBorderWidth);
+  uint8_t  m = beatsin8(18, kBorderWidth, SEGLEN-kBorderWidth);
+  uint8_t  n = beatsin8(15, kBorderWidth, SEGLEN-kBorderWidth);
+  uint8_t  p = beatsin8(20, kBorderWidth, SEGLEN-kBorderWidth);
 
   uint16_t ms = millis();
 
-  leds[XY( i, m)] += ColorFromPalette(currentPalette, ms/29, 255, LINEARBLEND);
-  leds[XY( j, n)] += ColorFromPalette(currentPalette, ms/41, 255, LINEARBLEND);
-  leds[XY( k, p)] += ColorFromPalette(currentPalette, ms/73, 255, LINEARBLEND);
+  leds[m] += ColorFromPalette(currentPalette, ms/29, 255, LINEARBLEND);
+  leds[n] += ColorFromPalette(currentPalette, ms/41, 255, LINEARBLEND);
+  leds[p] += ColorFromPalette(currentPalette, ms/73, 255, LINEARBLEND);
 
   for (int i=0; i<SEGLEN; i++) {
     setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
   }
 
-#else
-  fade_out(224);
-#endif // ESP8266
+//#else
+//  fade_out(224);
+//#endif // ESP8266
 
   return FRAMETIME;
 } // mode_2Dsquaredswirl()
@@ -4938,9 +4938,9 @@ uint16_t WS2812FX::mode_2Dsquaredswirl(void) {  // By: Mark Kriegsman. https://g
 /////////////////////////
 
 uint16_t WS2812FX::mode_2Dfire2012(void) {    // Fire2012 by Mark Kriegsman. Converted to WLED by Andrew Tuline.
-#ifdef ESP32
+//#ifdef ESP32
 
-  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
+//  if (matrixWidth * SEGLEN > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
 
   CRGB *leds = (CRGB *)ledData;
   static byte *heat = (byte *)dataStore;
@@ -4957,30 +4957,30 @@ uint16_t WS2812FX::mode_2Dfire2012(void) {    // Fire2012 by Mark Kriegsman. Con
     prevMillis = curMillis;
     static byte *heat = (byte *)dataStore;
 
-    for (int mw = 0; mw < matrixWidth; mw++) {  // Move along the width of the flame
+//    for (int mw = 0; mw < matrixWidth; mw++) {  // Move along the width of the flame
 
       // Step 1.  Cool down every cell a little
-      for (int mh = 0; mh < matrixHeight; mh++) {
-        heat[mw*matrixWidth+mh] = qsub8( heat[mw*matrixWidth+mh],  random16(0, ((COOLING * 10) / matrixHeight) + 2));
+      for (int mh = 0; mh < SEGLEN; mh++) {
+        heat[mh] = qsub8( heat[mh],  random16(0, ((COOLING * 10) / SEGLEN) + 2));
       }
 
       // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-      for (int mh = matrixHeight - 1; mh >= 2; mh--) {
-        heat[mw*matrixWidth+mh] = (heat[mw*matrixWidth+mh - 1] + heat[mw*matrixWidth+mh - 2] + heat[mw*matrixWidth+mh - 2] ) / 3;
+      for (int mh = SEGLEN - 1; mh >= 2; mh--) {
+        heat[mh] = (heat[mh - 1] + heat[mh - 2] + heat[mh - 2] ) / 3;
       }
 
       // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
       if (random8(0,255) < SPARKING ) {
         int mh = random8(3);
-        heat[mw*matrixWidth+mh] = qadd8( heat[mw*matrixWidth+mh], random8(160,255) );
+        heat[mh] = qadd8( heat[mh], random8(160,255) );
       }
 
       // Step 4.  Map from heat cells to LED colors
-      for (int mh = 0; mh < matrixHeight; mh++) {
-        byte colorindex = scale8( heat[mw*matrixWidth+mh], 240);
-        leds[XY(mw,mh)] = ColorFromPalette(currentPalette, colorindex, 255);
+      for (int mh = 0; mh < SEGLEN; mh++) {
+        byte colorindex = scale8( heat[mh], 240);
+        leds[mh] = ColorFromPalette(currentPalette, colorindex, 255);
       } // for mh
-    } // for mw
+//    } // for mw
 
     for (int i=0; i<SEGLEN; i++) {
       setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
@@ -4988,9 +4988,9 @@ uint16_t WS2812FX::mode_2Dfire2012(void) {    // Fire2012 by Mark Kriegsman. Con
 
   } // if millis
 
-#else
-  fade_out(224);
-#endif // ESP8266
+//#else
+//  fade_out(224);
+//#endif // ESP8266
 
   return FRAMETIME;
 } // mode_2Dfire2012()
@@ -5001,9 +5001,9 @@ uint16_t WS2812FX::mode_2Dfire2012(void) {    // Fire2012 by Mark Kriegsman. Con
 /////////////////////
 
 uint16_t WS2812FX::mode_2Ddna(void) {         // dna originally by by ldirko at https://pastebin.com/pCkkkzcs. Updated by Preyy. WLED version by Andrew Tuline.
-#ifdef ESP32
+//#ifdef ESP32
 
-  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
+//  if (matrixWidth * SEGLEN > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
 
   CRGB *leds = (CRGB *)ledData;
 
@@ -5015,12 +5015,12 @@ uint16_t WS2812FX::mode_2Ddna(void) {         // dna originally by by ldirko at 
   if ((curMillis - prevMillis) >= ((256-SEGMENT.speed) >>3)) {
     prevMillis = curMillis;
 
-  for(int i = 0; i < matrixHeight; i++) {
-      leds[XY(beatsin8(10, 0, matrixWidth-1, 0, i*4), i)] = ColorFromPalette(currentPalette, i*5+millis()/17, beatsin8(5, 55, 255, 0, i*10), LINEARBLEND);
-      leds[XY(beatsin8(10, 0, matrixWidth-1, 0, i*4+128), i)] = ColorFromPalette(currentPalette,i*5+128+millis()/17, beatsin8(5, 55, 255, 0, i*10+128), LINEARBLEND);        // 180 degrees (128) out of phase
+  for(int i = 0; i < SEGLEN; i++) {
+      leds[XY(beatsin8(10, 0, 0, 0, i*4), i)] = ColorFromPalette(currentPalette, i*5+millis()/17, beatsin8(5, 55, 255, 0, i*10), LINEARBLEND);
+      leds[XY(beatsin8(10, 0, 0, 0, i*4+128), i)] = ColorFromPalette(currentPalette,i*5+128+millis()/17, beatsin8(5, 55, 255, 0, i*10+128), LINEARBLEND);        // 180 degrees (128) out of phase
   }
 
-  blur2d(leds, matrixWidth, matrixHeight, 2);
+  blur2d(leds, 1, SEGLEN, 2);
 
    for (int i=0; i<SEGLEN; i++) {
       setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
@@ -5028,9 +5028,9 @@ uint16_t WS2812FX::mode_2Ddna(void) {         // dna originally by by ldirko at 
 
   } // if millis
 
-#else
-  fade_out(224);
-#endif // ESP8266
+//#else
+//  fade_out(224);
+//#endif // ESP8266
 
   return FRAMETIME;
 } // mode_2Ddna()
@@ -5041,9 +5041,9 @@ uint16_t WS2812FX::mode_2Ddna(void) {         // dna originally by by ldirko at 
 ///////////////////////
 
 uint16_t WS2812FX::mode_2Dmatrix(void) {      // Matrix2D. By Jeremy Williams. Adapted by Andrew Tuline.
-#ifdef ESP32
+//#ifdef ESP32
 
-  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
+//  if (matrixWidth * SEGLEN > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
 
   CRGB *leds = (CRGB* )ledData;
 
@@ -5055,26 +5055,26 @@ uint16_t WS2812FX::mode_2Dmatrix(void) {      // Matrix2D. By Jeremy Williams. A
   if ((curMillis - prevMillis) >= ((256-SEGMENT.speed) >>2)) {
     prevMillis = curMillis;
 
-    if (SEGMENT.fft3 < 128) {									      // check for orientation, slider in first quarter, default orientation
-    	for (int16_t row=matrixHeight-1; row>=0; row--) {
-    		for (int16_t col=0; col<matrixWidth; col++) {
-    			if (leds[XY(col, row)] == CRGB(175,255,175)) {
-    				leds[XY(col, row)] = CRGB(27,130,39);   // create trail
-    				if (row < matrixHeight-1) leds[XY(col, row+1)] = CRGB(175,255,175);
+ //   if (SEGMENT.fft3 < 128) {									      // check for orientation, slider in first quarter, default orientation
+    	for (int16_t row=SEGLEN-1; row>=0; row--) {
+//    		for (int16_t col=0; col<matrixWidth; col++) {
+    			if (leds[row] == CRGB(175,255,175)) {
+    				leds[row] = CRGB(27,130,39);   // create trail
+    				if (row < SEGLEN-1) leds[row+1] = CRGB(175,255,175);
     			}
-    		}
+//    		}
     	}
-    } else if (SEGMENT.fft3 >= 128)   {	            // second quadrant
-    	for (int16_t row=matrixHeight-1; row>=0; row--) {
+/*    } else if (SEGMENT.fft3 >= 128)   {	            // second quadrant
+    	for (int16_t row=SEGLEN-1; row>=0; row--) {
     	    		for (int16_t col=matrixWidth-1; col >= 0; col--) {
     	    			if (leds[XY(col, row)] == CRGB(175,255,175)) {
     	    				leds[XY(col, row)] = CRGB(27,130,39);   // create trail
-    	    				if (row < matrixHeight-1) leds[XY(col+1, row)] = CRGB(175,255,175);
+    	    				if (row < SEGLEN-1) leds[XY(col+1, row)] = CRGB(175,255,175);
     	    			}
     	    		}
     	    	}
       }
-    // fade all leds
+*/    // fade all leds
     for(int i = 0; i < SEGLEN; i++) {
       if (leds[i].g != 255) leds[i].nscale8(192);   // only fade trail
     }
@@ -5088,28 +5088,28 @@ uint16_t WS2812FX::mode_2Dmatrix(void) {      // Matrix2D. By Jeremy Williams. A
         break;
       }
     }
-
+/*
     // spawn new falling code
     if (SEGMENT.fft3 < 128) {
     	if (random8(3) == 0 || emptyScreen) {         // lower number == more frequent spawns
     	  uint8_t spawnX = random8(matrixWidth);
       	  leds[XY(spawnX, 0)] = CRGB(175,255,175 );
     	}
-    } else if (SEGMENT.fft3 >= 128) {
+    } else if (SEGMENT.fft3 >= 128) {   */
     	if (random8(3) == 0 || emptyScreen) {         // lower number == more frequent spawns
-    	  uint8_t spawnX = random8(matrixHeight);
-    	  leds[XY(0, spawnX)] = CRGB(175,255,175 );
+    	  uint8_t spawnX = random8(SEGLEN);
+    	  leds[spawnX] = CRGB(175,255,175 );
     	  }
-    }
+//    }
 
    for (int i=0; i<SEGLEN; i++) {
       setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
    }
   } // if millis
 
-#else
-  fade_out(224);
-#endif // ESP8266
+//#else
+//  fade_out(224);
+//#endif // ESP8266
 
   return FRAMETIME;
 } // mode_2Dmatrix()
@@ -5120,9 +5120,9 @@ uint16_t WS2812FX::mode_2Dmatrix(void) {      // Matrix2D. By Jeremy Williams. A
 /////////////////////////
 
 uint16_t WS2812FX::mode_2Dmeatballs(void) {   // Metaballs by Stefan Petrick. Cannot have one of the dimensions be 2 or less. Adapted by Andrew Tuline.
-#ifdef ESP32
+//#ifdef ESP32
 
-  if (matrixWidth * matrixHeight > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
+//  if (matrixWidth * SEGLEN > SEGLEN) {return blink(CRGB::Red, CRGB::Black, false, false);}    // No, we're not going to overrun the segment.
 
   CRGB *leds = (CRGB* )ledData;
 
@@ -5139,20 +5139,20 @@ uint16_t WS2812FX::mode_2Dmeatballs(void) {   // Metaballs by Stefan Petrick. Ca
   uint8_t x1 = beatsin8(23 * speed, 0, 15);
   uint8_t y1 = beatsin8(28 * speed, 0, 15);
 
-  for (uint8_t y = 0; y < matrixHeight; y++) {
-    for (uint8_t x = 0; x < matrixWidth; x++) {
+  for (uint8_t y = 0; y < SEGLEN; y++) {
+//    for (uint8_t x = 0; x < matrixWidth; x++) {
 
       // calculate distances of the 3 points from actual pixel
       // and add them together with weightening
-      uint8_t  dx =  abs(x - x1);
+      uint8_t  dx =  abs(0 - x1);
       uint8_t  dy =  abs(y - y1);
       uint8_t dist = 2 * sqrt((dx * dx) + (dy * dy));
 
-      dx =  abs(x - x2);
+      dx =  abs(0 - x2);
       dy =  abs(y - y2);
       dist += sqrt((dx * dx) + (dy * dy));
 
-      dx =  abs(x - x3);
+      dx =  abs(0 - x3);
       dy =  abs(y - y3);
       dist += sqrt((dx * dx) + (dy * dy));
 
@@ -5161,24 +5161,24 @@ uint16_t WS2812FX::mode_2Dmeatballs(void) {   // Metaballs by Stefan Petrick. Ca
 
       // map color between thresholds
       if (color > 0 and color < 60) {
-        leds[XY(x, y)] = ColorFromPalette(currentPalette, color * 9, 255);
+        leds[y] = ColorFromPalette(currentPalette, color * 9, 255);
       } else {
-        leds[XY(x, y)] = ColorFromPalette(currentPalette, 0, 255);
+        leds[y] = ColorFromPalette(currentPalette, 0, 255);
       }
         // show the 3 points, too
         leds[XY(x1,y1)] = CRGB(255, 255,255);
         leds[XY(x2,y2)] = CRGB(255, 255,255);
         leds[XY(x3,y3)] = CRGB(255, 255,255);
-    }
+//    }
   }
 
    for (int i=0; i<SEGLEN; i++) {
       setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
    }
 
-#else
-  fade_out(224);
-#endif // ESP8266
+//#else
+//  fade_out(224);
+//#endif // ESP8266
 
   return FRAMETIME;
 } // mode_2Dmeatballs()
