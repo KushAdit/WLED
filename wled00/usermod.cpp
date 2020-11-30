@@ -107,9 +107,9 @@ void userLoop() {
   if (millis()-lastTime > delayMs) {                        // I need to run this continuously because the animations are too slow
     if (!(audioSyncEnabled & (1 << 1))) {                   // Only run the sampling code IF we're not in Receive mode
       lastTime = millis();
-      getSample();                                          // Sample the microphone
-      agcAvg();                                             // Calculated the PI adjusted value as sampleAvg
-      myVals[millis()%32] = sampleAgc;
+      //getSample();                                          // Sample the microphone
+      //agcAvg();                                             // Calculated the PI adjusted value as sampleAvg
+      //myVals[millis()%32] = sampleAgc;
       logAudio();
     }
     #ifdef ESP32

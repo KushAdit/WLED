@@ -71,6 +71,14 @@ uint16_t lastSample;                                // last audio noise sample
 
 uint8_t myVals[32];                                 // Used to store a pile of samples as WLED frame rate and WLED sample rate are not synchronized
 
+int sAmple[200];
+uint8_t sAmplenum = 0;
+int sound15msAvg=0;
+int dampSound15msAvg=0;
+int sound15msBass=0;
+int dampSound15msBass=0;
+double fftResultBass[5];
+
 struct audioSyncPacket {
   char header[6] = UDP_SYNC_HEADER;
   uint8_t myVals[32];     //  32 Bytes
@@ -86,6 +94,37 @@ struct audioSyncPacket {
 bool isValidUdpSyncVersion(char header[6]) {
   return (header == UDP_SYNC_HEADER);
 }
+
+int getSampleAvg()
+{
+  for (int i = 0; i < sAmplenum; i++) {
+    sound15msAvg += sAmple[i];
+  }
+    
+  if (sAmplenum != 0)
+    sound15msAvg = sound15msAvg / sAmplenum;
+    else
+    sound15msAvg=0;
+   // Serial.println(sAmplenum);
+  //Serial.println(n);
+  sAmplenum = 0;
+    sound15msBass = ((3 * fftResultBass[0]) + (3 * fftResultBass[1]) + (2 * fftResultBass[2]) + (2 * fftResultBass[3]) + fftResultBass[4]) / 11;
+
+  return sound15msAvg;
+
+}
+
+int getSound(bool b, bool g){
+  int sound;
+  if(!g)
+  getSampleAvg();
+  if(!b)
+  sound= sound15msAvg;
+  else
+  sound= sound15msBass;
+return sound;
+}
+
 
 void getSample() {
   static long peakTime;
@@ -241,6 +280,11 @@ void agcAvg() {                                                     // A simple 
         if (digitalMic == false) {
           micData = analogRead(MIC_PIN);                      // Analog Read
           rawMicData = micData >> 2;                          // ESP32 has 12 bit ADC
+          sAmple[sAmplenum] = rawMicData;         
+          sAmple[sAmplenum] = abs(sAmple[sAmplenum] - 450 ); // Center on zero
+          sAmple[sAmplenum] = (sAmple[sAmplenum] <= NOISE) ? 0 : (sAmple[sAmplenum] - NOISE); // Remove noise/hum
+          if (sAmple[sAmplenum] > 1 && sAmplenum < 200)
+            sAmplenum++;
         } else {
           int32_t digitalSample = 0;
           int bytes_read = i2s_pop_sample(I2S_PORT, (char *)&digitalSample, portMAX_DELAY); // no timeout
