@@ -222,10 +222,10 @@ void initServer()
 
 void serveIndexOrWelcome(AsyncWebServerRequest *request)
 {
-  if (!showWelcomePage){
+ // if (!showWelcomePage){
     serveIndex(request);
-  } else {
-    serveSettings(request);
+ // } else {
+ //  serveSettings(request);
   }
 }
 
