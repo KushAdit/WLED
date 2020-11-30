@@ -80,6 +80,7 @@ void WS2812FX::service() {
     {
       if(nowUp > SEGENV.next_time || _triggered || (doShow && SEGMENT.mode == 0)) //last is temporary
       {
+        int curSegment =_segment_index;
         if (SEGMENT.grouping == 0) SEGMENT.grouping = 1; //sanity check
         doShow = true;
         uint16_t delay = FRAMETIME;
@@ -87,7 +88,20 @@ void WS2812FX::service() {
         if (!SEGMENT.getOption(SEG_OPTION_FREEZE)) { //only run effect function if not frozen
           _virtualSegmentLength = SEGMENT.virtualLength();
           handle_palette();
+          if (SEGMENT.mode != 133)
           delay = (this->*_mode[SEGMENT.mode])(); //effect function
+          else
+          {
+            if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
+            {
+              _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % MODE_COUNT;
+              
+              _lastEffectChange[curSegment] = millis();
+            }
+            if(_cycleEffect[curSegment]==133)
+            ++_cycleEffect[curSegment];
+            delay = (this->*_mode[_cycleEffect[curSegment]])();
+          }
           if (SEGMENT.mode != FX_MODE_HALLOWEEN_EYES) SEGENV.call++;
         }
 

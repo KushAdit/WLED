@@ -4744,7 +4744,7 @@ uint16_t i;
 // fft1 slider above 1/2 will shift the colors
 // fft2 slider == scale (how far away are we from the plasma)
 
-uint16_t WS2812FX::mode_2Dplasma(void) {      // By Andreas Pleschutznig. A work in progress.
+uint16_t WS2812FX::mode_cycleeffects(void) {      // By Andreas Pleschutznig. A work in progress.
 /*
 #ifdef ESP32
 
@@ -4836,8 +4836,8 @@ uint16_t WS2812FX::mode_2Dplasma(void) {      // By Andreas Pleschutznig. A work
 #else
   fade_out(224);
 #endif // ESP8266
-
-  return FRAMETIME; */
+*/
+  return FRAMETIME; 
 } // mode_2Dplasma()
 
 
