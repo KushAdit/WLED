@@ -324,12 +324,12 @@ uint8_t WS2812FX::getPaletteCount()
 
 //TODO transitions
 
-bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t f1, uint8_t f2, uint8_t f3, uint8_t p) {
+bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t f1, uint8_t f2, uint8_t f3, uint8_t p, bool b) {
 
   uint8_t mainSeg = getMainSegmentId();
   Segment& seg = _segments[getMainSegmentId()];
   uint8_t modePrev = seg.mode, speedPrev = seg.speed, intensityPrev = seg.intensity, fft1Prev = seg.fft1, fft2Prev = seg.fft2, fft3Prev = seg.fft3, palettePrev = seg.palette;
-
+  bool bassPrev = seg.bass;
   bool applied = false;
   
   if (applyToAllSelected) {
@@ -343,6 +343,7 @@ bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t f1, uin
         _segments[i].fft2 = f2;
         _segments[i].fft3 = f3;
         _segments[i].palette = p;
+        _segments[i].bass = b;
         setMode(i, m);
         applied = true;
       }
@@ -356,10 +357,11 @@ bool WS2812FX::setEffectConfig(uint8_t m, uint8_t s, uint8_t in, uint8_t f1, uin
     seg.fft2 = f2;
     seg.fft3 = f3;
     seg.palette = p;
+    seg.bass = b;
     setMode(mainSegment, m);
   }
 
-  if (seg.mode != modePrev || seg.speed != speedPrev || seg.intensity != intensityPrev || seg.fft1 != fft1Prev || seg.fft2 != fft2Prev || seg.fft3 != fft3Prev || seg.palette != palettePrev) return true;
+  if (seg.mode != modePrev || seg.speed != speedPrev || seg.intensity != intensityPrev || seg.fft1 != fft1Prev || seg.fft2 != fft2Prev || seg.fft3 != fft3Prev || seg.palette != palettePrev || seg.bass != bassPrev) return true;
   return false;
 }
 
@@ -536,6 +538,7 @@ void WS2812FX::resetSegments() {
   _segments[0].start = 0;
   _segments[0].speed = DEFAULT_SPEED;
   _segments[0].intensity = DEFAULT_INTENSITY;
+  _segments[0].bass = DEFAULT_BASS;
   _segments[0].stop = _length;
   _segments[0].grouping = 1;
   _segments[0].setOption(SEG_OPTION_SELECTED, 1);
@@ -550,6 +553,7 @@ void WS2812FX::resetSegments() {
     _segments[i].opacity = 255;
     _segments[i].speed = DEFAULT_SPEED;
     _segments[i].intensity = DEFAULT_INTENSITY;
+    _segments[i].bass = DEFAULT_BASS;
     _segment_runtimes[i].reset();
   }
   _segment_runtimes[0].reset();
@@ -949,6 +953,7 @@ bool WS2812FX::segmentsAreIdentical(Segment* a, Segment* b)
   if (a->fft2 != b->fft2) return false;
   if (a->fft3 != b->fft3) return false;
   if (a->palette != b->palette) return false;
+  if (a->bass != b->bass) return false;
   //if (a->getOption(SEG_OPTION_REVERSED) != b->getOption(SEG_OPTION_REVERSED)) return false;
   return true;
 }

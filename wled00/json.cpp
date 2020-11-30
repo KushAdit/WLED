@@ -99,6 +99,7 @@ void deserializeSegment(JsonObject elem, byte it)
       effectFFT2 = elem[F("f2x")] | effectFFT2;
       effectFFT3 = elem[F("f3x")] | effectFFT3;
       effectPalette = elem[F("pal")] | effectPalette;
+      effectBass = elem[F("bas")] | effectBass;
     } else { //permanent
       byte fx = elem[F("fx")] | seg.mode;
       if (fx != seg.mode && fx < strip.getModeCount()) strip.setMode(id, fx);
@@ -108,6 +109,7 @@ void deserializeSegment(JsonObject elem, byte it)
       seg.fft2 = elem[F("f2x")] | seg.fft2;
       seg.fft3 = elem[F("f3x")] | seg.fft3;
       seg.palette = elem[F("pal")] | seg.palette;
+      seg.bass = elem[F("bas")] | seg.bass;
     }
 
     JsonArray iarr = elem[F("i")]; //set individual LEDs
@@ -333,6 +335,7 @@ void serializeSegment(JsonObject& root, WS2812FX::Segment& seg, byte id, bool fo
   root[F("f2x")] = seg.fft2;
   root[F("f3x")] = seg.fft3;
 	root[F("pal")] = seg.palette;
+	root[F("bas")] = seg.bass;
 	root[F("sel")] = seg.isSelected();
 	root[F("rev")] = seg.getOption(SEG_OPTION_REVERSED);
   root[F("mi")]  = seg.getOption(SEG_OPTION_MIRROR);
