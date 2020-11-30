@@ -128,7 +128,7 @@ int getSound(bool b, bool g){
 return sound;
 }
 
-
+/*
 void getSample() {
   static long peakTime;
 
@@ -185,7 +185,7 @@ void agcAvg() {                                                     // A simple 
   if (userVar0 > 255) userVar0 = 255;
 
 } // agcAvg()
-
+*/
 
 
 ////////////////////
