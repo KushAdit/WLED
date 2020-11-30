@@ -226,7 +226,7 @@ void serveIndexOrWelcome(AsyncWebServerRequest *request)
     serveIndex(request);
  // } else {
  //  serveSettings(request);
-  }
+ // }
 }
 
 
