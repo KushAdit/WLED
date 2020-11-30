@@ -101,15 +101,17 @@ int getSampleAvg()
     sound15msAvg += sAmple[i];
   }
     
-  if (sAmplenum != 0)
+  if (sAmplenum != 0){
     sound15msAvg = sound15msAvg / sAmplenum;
+    sound15msAvg = sound15msAvg * sampleGain / 40 + sound15msAvg / 16;
+  }
     else
     sound15msAvg=0;
    // Serial.println(sAmplenum);
   //Serial.println(n);
   sAmplenum = 0;
     sound15msBass = ((3 * fftResultBass[0]) + (3 * fftResultBass[1]) + (2 * fftResultBass[2]) + (2 * fftResultBass[3]) + fftResultBass[4]) / 11;
-
+    sound15msBass = sound15msBass * sampleGain / 40 + sound15msBass / 16;
   return sound15msAvg;
 
 }
@@ -282,7 +284,7 @@ void agcAvg() {                                                     // A simple 
           rawMicData = micData >> 2;                          // ESP32 has 12 bit ADC
           sAmple[sAmplenum] = rawMicData;         
           sAmple[sAmplenum] = abs(sAmple[sAmplenum] - 450 ); // Center on zero
-          sAmple[sAmplenum] = (sAmple[sAmplenum] <= NOISE) ? 0 : (sAmple[sAmplenum] - NOISE); // Remove noise/hum
+          sAmple[sAmplenum] = (sAmple[sAmplenum] <= squelch) ? 0 : (sAmple[sAmplenum] - squelch); // Remove noise/hum
           if (sAmple[sAmplenum] > 1 && sAmplenum < 200)
             sAmplenum++;
         } else {

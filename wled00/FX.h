@@ -87,7 +87,6 @@
 #define SPEED_FORMULA_L  5 + (50*(255 - SEGMENT.speed))/SEGLEN
 #define RESET_RUNTIME    memset(_segment_runtimes, 0, sizeof(_segment_runtimes))
 
-# define NOISE 35
 # define SAMPLES 10
 # define PEAK_FALL 3
 extern int sAmple[200];
