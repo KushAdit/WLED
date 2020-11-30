@@ -284,7 +284,7 @@ void agcAvg() {                                                     // A simple 
           rawMicData = micData >> 2;                          // ESP32 has 12 bit ADC
           sAmple[sAmplenum] = rawMicData;         
           sAmple[sAmplenum] = abs(sAmple[sAmplenum] - 450 ); // Center on zero
-          sAmple[sAmplenum] = (sAmple[sAmplenum] <= squelch) ? 0 : (sAmple[sAmplenum] - squelch); // Remove noise/hum
+          sAmple[sAmplenum] = (sAmple[sAmplenum] <= soundSquelch) ? 0 : (sAmple[sAmplenum] - soundSquelch); // Remove noise/hum
           if (sAmple[sAmplenum] > 1 && sAmplenum < 200)
             sAmplenum++;
         } else {
