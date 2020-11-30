@@ -3848,7 +3848,7 @@ uint16_t WS2812FX::mode_gravimeter(void) {                                // Gra
   fade_out(240);
 
  // sampleAvg = sampleAvg * SEGMENT.intensity / 255;
-  int sound = getSound(SEGMENT.bb, gotSound);
+  int sound = getSound(false, gotSound);
   gotSound = true;
   int tempsamp = constrain(sound*2,0,SEGLEN-1);                       // Keep the sample from overflowing.
   uint8_t gravity = 8 - SEGMENT.speed/32;
