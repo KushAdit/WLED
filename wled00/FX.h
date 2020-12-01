@@ -564,8 +564,7 @@ class WS2812FX {
       blur1d( CRGB* leds, uint16_t numLeds, fract8 blur_amount),
       blur2d( CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
       blurRows( CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
-      blurColumns(CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
-      setColorOrder(uint8_t co);
+      blurColumns(CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount);
 
 
     bool
