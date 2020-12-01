@@ -338,7 +338,7 @@ public:
         #endif
       }
       break;
-    } 
+    }
   }
 
   void SetBrightness(byte b)

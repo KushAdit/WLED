@@ -1004,30 +1004,30 @@ input[type=number]::-webkit-outer-spin-button {
 			<div class="sliderdisplay"></div>
 		</div><br>
 	</div>
-    <div id="wwrap">
-      <p class="labels">White channel</p>
-      <div class="sliderwrap il">
-        <input id="sliderW" class="noslide" onchange="setColor(0)" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
-        <div class="sliderdisplay"></div>
-      </div>
-    </div>
-    <div id="qcs-w">
-      <div class="qcs" onclick="pC('#ff0000');" style="background-color:#ff0000;"></div>
-      <div class="qcs" onclick="pC('#ffa000');" style="background-color:#ffa000;"></div>
-      <div class="qcs" onclick="pC('#ffc800');" style="background-color:#ffc800;"></div>
-      <div class="qcs" onclick="pC('#ffe0a0');" style="background-color:#ffe0a0;"></div>
-      <div class="qcs" onclick="pC('#ffffff');" style="background-color:#ffffff;"></div>
-      <div class="qcs qcsb" onclick="pC('#000000');" style="background-color:#000000;"></div><br>
-      <div class="qcs" onclick="pC('#ff00ff');" style="background-color:#ff00ff;"></div>
-      <div class="qcs" onclick="pC('#0000ff');" style="background-color:#0000ff;"></div>
-      <div class="qcs" onclick="pC('#00ffc8');" style="background-color:#00ffc8;"></div>
-      <div class="qcs" onclick="pC('#08ff00');" style="background-color:#08ff00;"></div>
-      <div class="qcs" onclick="pC('rnd');" style="background-color:var(--c-3); padding: 4px 8px; transform: translateY(-10px);">R</div>
-    </div>
-    <div id="csl">
-      <button class="xxs cl btn" onclick="selectSlot(0);">1</button>
-      <button class="xxs cl btn" onclick="selectSlot(1);">2</button>
-      <button class="xxs cl btn" onclick="selectSlot(2);">3</button>
+	<div id="wwrap">
+		<p class="labels">White channel</p>
+		<div class="sliderwrap il">
+			<input id="sliderW" class="noslide" onchange="setColor(0)" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+			<div class="sliderdisplay"></div>
+		</div>
+	</div>
+	<div id="qcs-w">
+		<div class="qcs" onclick="pC('#ff0000');" style="background-color:#ff0000;"></div>
+		<div class="qcs" onclick="pC('#ffa000');" style="background-color:#ffa000;"></div>
+		<div class="qcs" onclick="pC('#ffc800');" style="background-color:#ffc800;"></div>
+		<div class="qcs" onclick="pC('#ffe0a0');" style="background-color:#ffe0a0;"></div>
+		<div class="qcs" onclick="pC('#ffffff');" style="background-color:#ffffff;"></div>
+		<div class="qcs qcsb" onclick="pC('#000000');" style="background-color:#000000;"></div><br>
+		<div class="qcs" onclick="pC('#ff00ff');" style="background-color:#ff00ff;"></div>
+		<div class="qcs" onclick="pC('#0000ff');" style="background-color:#0000ff;"></div>
+		<div class="qcs" onclick="pC('#00ffc8');" style="background-color:#00ffc8;"></div>
+		<div class="qcs" onclick="pC('#08ff00');" style="background-color:#08ff00;"></div>
+		<div class="qcs" onclick="pC('rnd');" style="background-color:var(--c-3); padding: 4px 8px; transform: translateY(-10px);">R</div>
+	</div>
+	<div id="csl">
+		<button class="xxs cl btn" onclick="selectSlot(0);">1</button>
+		<button class="xxs cl btn" onclick="selectSlot(1);">2</button>
+		<button class="xxs cl btn" onclick="selectSlot(2);">3</button>
 	</div>
 	<div id="hexw">
 		<input id="hexc" type="text" class="noslide" onkeydown="hexEnter(this)" autocomplete="off" maxlength="8" />
@@ -1048,7 +1048,8 @@ input[type=number]::-webkit-outer-spin-button {
     <div class="staytop">
       <i class="icons slider-icon">&#xe325;</i>
       <div class="sliderwrap il">
-        <input id="sliderSpeed" class="noslide" onchange="setSpeed()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+				<input id="sliderSpeed" class="noslide" onchange="setSpeed()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+				<output class="sliderbubble hidden"></output>
         <div class="sliderdisplay"></div>
       </div>
     </div>
@@ -1056,7 +1057,8 @@ input[type=number]::-webkit-outer-spin-button {
     <div class="staytop" id="staytop1">
       <i class="icons slider-icon" onclick="tglLabels()">&#xe409;</i>
       <div class="sliderwrap il">
-        <input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+				<input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+				<output class="sliderbubble hidden"></output>
         <div class="sliderdisplay"></div>
       </div>
     </div>
@@ -1064,7 +1066,8 @@ input[type=number]::-webkit-outer-spin-button {
     <div class="staytop" id="staytop2">
       <i class="icons slider-icon">&#xe409;</i>
       <div class="sliderwrap il">
-        <input id="sliderFFT1" class="noslide" onchange="setFFT1()" oninput="updateTrail(this)" max="255" min="0" type="range" value="6" />
+				<input id="sliderFFT1" class="noslide" onchange="setFFT1()" oninput="updateTrail(this)" max="255" min="0" type="range" value="6" />
+				<output class="sliderbubble hidden"></output>
         <div class="sliderdisplay"></div>
       </div>
     </div>
@@ -1072,7 +1075,8 @@ input[type=number]::-webkit-outer-spin-button {
     <div class="staytop" id="staytop3">
       <i class="icons slider-icon">&#xe409;</i>
       <div class="sliderwrap il">
-        <input id="sliderFFT2" class="noslide" onchange="setFFT2()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+				<input id="sliderFFT2" class="noslide" onchange="setFFT2()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+				<output class="sliderbubble hidden"></output>
         <div class="sliderdisplay"></div>
       </div>
     </div>
@@ -1080,7 +1084,8 @@ input[type=number]::-webkit-outer-spin-button {
     <div class="staytop" id="staytop4">
       <i class="icons slider-icon">&#xe409;</i>
       <div class="sliderwrap il">
-        <input id="sliderFFT3" class="noslide" onchange="setFFT3()" oninput="updateTrail(this)" max="255" min="0" type="range" value="252" />
+				<input id="sliderFFT3" class="noslide" onchange="setFFT3()" oninput="updateTrail(this)" max="255" min="0" type="range" value="252" />
+				<output class="sliderbubble hidden"></output>
         <div class="sliderdisplay"></div>
       </div>
     </div>
