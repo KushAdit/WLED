@@ -454,6 +454,23 @@ img {
 	z-index: -1;
 }
 
+.sliderbubble {
+    width: 36px;
+    line-height: 24px;
+    background: var(--c-3);
+    position: absolute;
+    transform: translateX(-50%);
+    border-radius: 12px;
+    margin-left: 12px;
+    margin-top: 3px;
+    padding: 0px;
+    display: inline;
+}
+
+.hidden {
+	display: none;
+}
+
 input[type=range] {
 	-webkit-appearance: none;
 	width: 220px;
@@ -492,6 +509,10 @@ input[type=range]::-moz-range-thumb {
 	border-radius: 17px;
 	background: var(--c-f);
 	transform: translateY(7px);
+}
+input[type=range]:active + .sliderbubble {
+	display: inline;
+	transform: translateX(-50%);
 }
 
 #wwrap {
@@ -895,6 +916,12 @@ input[type=number]::-webkit-outer-spin-button {
 	background: var(--c-sbh);
 }
 
+@media all and (max-width: 335px) {
+	.sliderbubble {
+    display: none;
+  }
+}
+
 @media all and (max-width: 550px) and (min-width: 374px) {
 	.infobtn {
 		width: 155px;
@@ -1094,8 +1121,8 @@ input[type=number]::-webkit-outer-spin-button {
 			<input type="checkbox" id="cyToggle" onchange="toggleCY()">
 			<span class="checkmark psv"></span>
 		</label><br>
-		First preset: <input id="cycs" class="noslide" type="number" min="1" max="14" value="1"><br>
-		Last preset: <input id="cyce" class="noslide" type="number" min="2" max="15" value="3"><br>
+		First preset: <input id="cycs" class="noslide" type="number" min="1" max="249" value="1"><br>
+		Last preset: <input id="cyce" class="noslide" type="number" min="2" max="250" value="3"><br>
 		Time per preset: <input id="cyct" class="noslide" type="number" min="0.2" max="6553.5" step="0.1" value="1.2">s<br>
 		Transition: <input id="cyctt" class="noslide" type="number" min="0" max="65.5" step="0.1" value="0.7">s
 	</div>
@@ -1342,6 +1369,13 @@ function onLoad() {
 	size();
 	d.getElementById("cv").style.opacity=0;
 	if (localStorage.getItem('pcm') == "true") togglePcMode(true);
+	var sls = d.querySelectorAll('input[type="range"]');
+	for (var sl of sls) {
+		sl.addEventListener('input', updateBubble, true);
+		sl.addEventListener('touchstart', toggleBubble);
+		sl.addEventListener('touchend', toggleBubble);
+	}
+
 }
 
 function updateTablinks(tabI)
@@ -1721,6 +1755,21 @@ function updateTrail(e, slidercol)
 	e.parentNode.getElementsByClassName('sliderdisplay')[0].style.background = val;
 }
 
+function updateBubble(e)
+{
+	var bubble = e.target.parentNode.getElementsByTagName('output')[0]
+	var max = e.target.hasAttribute('max') ? e.target.attributes.max.value : 255;
+
+	if (bubble) {
+		bubble.innerHTML = e.target.value
+	}
+}
+
+function toggleBubble(e)
+{
+	e.target.parentNode.querySelector('output').classList.toggle('hidden');
+}
+
 function updateLen(s)
 {
 	if (!d.getElementById(`seg${s}s`)) return;
@@ -1802,7 +1851,7 @@ function compare(a, b) {
 }
 function cmpP(a, b) {
 	if (!a[1].n) return (a[0] > b[0]);
-	return a[1].n.localeCompare(b[1].n);
+  return a[1].n.localeCompare(b[1].n,undefined, {numeric: true});
 }
 
 var jsonTimeout;
@@ -2250,7 +2299,10 @@ function saveP(i) {
 			} else if (raw.indexOf('{') > -1) {
 				d.getElementById(`p${i}warn`).innerHTML = "&#9888; Syntax error in custom JSON API command";
 				return;
-			}
+			} else if (raw.indexOf("Please") == 0) {
+        d.getElementById(`p${i}warn`).innerHTML = "&#9888; Please refresh the page before modifying this preset";
+				return;
+      }
 		}
 		obj["o"] = true;
 	} else {
@@ -2436,9 +2488,11 @@ function expand(i,a)
 		var p = i-100;
 		d.getElementById(`p${p}o`).style.background = (expanded[i] || p != currentPreset)?"var(--c-2)":"var(--c-6)";
 		if (d.getElementById('seg' +i).innerHTML == "") {
-			d.getElementById('seg' +i).innerHTML = makeP(p);
-			d.getElementById(`p${p}api`).value = papiVal(p);
-			tglCs(p);
+      d.getElementById('seg' +i).innerHTML = makeP(p);
+      var papi = papiVal(p);
+      d.getElementById(`p${p}api`).value = papi;
+      if (papi.indexOf("Please") == 0) d.getElementById(`p${p}cstgl`).checked = true;
+      tglCs(p);
 		}
 	}
 }

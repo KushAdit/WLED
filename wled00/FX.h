@@ -27,7 +27,12 @@
 #ifndef WS2812FX_h
 #define WS2812FX_h
 
-#include "NpbWrapper.h"
+#ifdef ESP32_MULTISTRIP
+  #include "../usermods/esp32_multistrip/NpbWrapper.h"
+#else
+  #include "NpbWrapper.h"
+#endif
+
 #include "const.h"
 
 #define FASTLED_INTERNAL //remove annoying pragma messages
@@ -558,7 +563,9 @@ class WS2812FX {
       blur1d( CRGB* leds, uint16_t numLeds, fract8 blur_amount),
       blur2d( CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
       blurRows( CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
-      blurColumns(CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount);
+      blurColumns(CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
+      setColorOrder(uint8_t co);
+
 
     bool
       reverseMode = false,      //is the entire LED strip reversed?
@@ -573,7 +580,6 @@ class WS2812FX {
       rgbwMode = RGBW_MODE_DUAL,
       paletteFade = 0,
       paletteBlend = 0,
-      colorOrder = 0,
       milliampsPerLed = 55,
       getBrightness(void),
       getMode(void),
@@ -583,6 +589,7 @@ class WS2812FX {
       getMaxSegments(void),
       //getFirstSelectedSegment(void),
       getMainSegmentId(void),
+      getColorOrder(void),
       gamma8(uint8_t),
       gamma8_cal(uint8_t, float),
       get_random_wheel_index(uint8_t);

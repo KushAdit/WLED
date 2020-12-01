@@ -778,6 +778,7 @@ uint16_t WS2812FX::mode_chase_random(void) {
  */
 uint16_t WS2812FX::mode_chase_rainbow(void) {
   uint8_t color_sep = 256 / SEGLEN;
+  if (color_sep == 0) color_sep = 1;                                           // correction for segments longer than 256 LEDs
   uint8_t color_index = SEGENV.call & 0xFF;
   uint32_t color = color_wheel(((SEGENV.step * color_sep) + color_index) & 0xFF);
 
