@@ -111,6 +111,7 @@ void WS2812FX::service() {
   }
   _virtualSegmentLength = 0;
   gotSound =false;
+  gotSoundFr =false;
   if(doShow) {
     yield();
     show();
