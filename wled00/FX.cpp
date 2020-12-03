@@ -3884,6 +3884,8 @@ uint16_t WS2812FX::mode_plasmoid(void) {                                  // Pla
 
   uint8_t thisbright;
   uint8_t colorIndex;
+  int sound = getSound(SEGMENT.bass, gotSound);
+  gotSound = true;
 
   thisphase += beatsin8(6,-4,4);                                          // You can change direction and speed individually.
   thatphase += beatsin8(7,-4,4);                                          // Two phase values to make a complex pattern. By Andrew Tuline.
@@ -3893,7 +3895,7 @@ uint16_t WS2812FX::mode_plasmoid(void) {                                  // Pla
     thisbright += cos8((i*117)+thatphase)/2;                              // Let's munge the brightness a bit and animate it all with the phases.
     colorIndex=thisbright;
 
-    if (sampleAvg * 8 * SEGMENT.intensity/256 > thisbright) {thisbright = 255;} else {thisbright = 0;}
+    if (sound * 8 * SEGMENT.intensity/256 > thisbright) {thisbright = 255;} else {thisbright = 0;}
     setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(colorIndex, false, PALETTE_SOLID_WRAP, 0), thisbright));
   }
 
@@ -3912,9 +3914,10 @@ uint16_t WS2812FX::mode_puddles(void) {                                   // Pud
   uint16_t pos = random(SEGLEN);                                          // Set a random starting position.
 
   fade_out(fadeVal);
-
-  if (sample>0 ) {
-    size = sample * SEGMENT.intensity /256 /8 + 1;                        // Determine size of the flash based on the volume.
+  int sound = getSound(SEGMENT.bass, gotSound);
+  gotSound = true;
+  if (sound>0 ) {
+    size = sound * SEGMENT.intensity /256 /8 + 1;                        // Determine size of the flash based on the volume.
     if (pos+size>= SEGLEN) size=SEGLEN-pos;
   }
 
@@ -3936,14 +3939,15 @@ uint16_t WS2812FX::mode_midnoise(void) {                                  // Mid
   static uint16_t ydist;
 
   fade_out(SEGMENT.speed);
-
-  uint16_t maxLen = sampleAvg * SEGMENT.intensity / 256;                  // Too sensitive.
+  int sound = getSound(SEGMENT.bass, gotSound);
+  gotSound = true;
+  uint16_t maxLen = sound * SEGMENT.intensity / 256;                  // Too sensitive.
   maxLen = maxLen * SEGMENT.intensity / 256;                              // Reduce sensitity/length.
 
   if (maxLen >SEGLEN/2) maxLen = SEGLEN/2;
 
   for (int i=(SEGLEN/2-maxLen); i<(SEGLEN/2+maxLen); i++) {
-    uint8_t index = inoise8(i*sampleAvg+xdist, ydist+i*sampleAvg);        // Get a value from the noise function. I'm using both x and y axis.
+    uint8_t index = inoise8(i*sound+xdist, ydist+i*sound);        // Get a value from the noise function. I'm using both x and y axis.
     setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(index, false, PALETTE_SOLID_WRAP, 0), 255));
   }
 
@@ -3964,15 +3968,17 @@ uint16_t WS2812FX::mode_noisemeter(void) {                                // Noi
   static uint16_t ydist;
 
   fade_out(SEGMENT.speed);
-
-  int maxLen = sampleAvg;
-  if (sample > sampleAvg) maxLen = sample-sampleAvg;
+  int sound = getSound(SEGMENT.bass, gotSound);
+  gotSound = true;
+  int maxLen = sound;
+  int instSound = sAmple[sAmplenum];
+  if (instSound > sound) maxLen = instSound-sound;
   maxLen = maxLen * SEGMENT.intensity / 256;                              // Still a bit too sensitive.
   maxLen = maxLen * SEGMENT.intensity / 256;                              // Reduce sensitivity/length.
   if (maxLen >SEGLEN) maxLen = SEGLEN;
 
   for (int i=0; i<maxLen; i++) {                                          // The louder the sound, the wider the soundbar. By Andrew Tuline.
-    uint8_t index = inoise8(i*sampleAvg+xdist, ydist+i*sampleAvg);        // Get a value from the noise function. I'm using both x and y axis.
+    uint8_t index = inoise8(i*sound+xdist, ydist+i*sound);        // Get a value from the noise function. I'm using both x and y axis.
     setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(index, false, PALETTE_SOLID_WRAP, 0), 255));
   }
 
@@ -3992,7 +3998,8 @@ uint16_t WS2812FX::mode_noisefire(void) {     // Noisefire. By Andrew Tuline.
 
   const uint8_t xscale = 20;                  // How far apart they are
   const uint8_t yscale = 3;                   // How fast they move
-
+int sound = getSound(SEGMENT.bass, gotSound);
+  gotSound = true;
   CRGB color;
   uint16_t index;                             // Current colour lookup value.
 
@@ -4004,7 +4011,7 @@ uint16_t WS2812FX::mode_noisefire(void) {     // Noisefire. By Andrew Tuline.
   for (int i = 0; i < SEGLEN; i++) {
     index = inoise8(i*xscale,millis()*yscale*SEGLEN/255);                       // X location is constant, but we move along the Y at the rate of millis(). By Andrew Tuline.
     index = (255 - i*256/SEGLEN) * index/128;                                   // Now we need to scale index so that it gets blacker as we get close to one of the ends.
-    color = ColorFromPalette(currentPalette, index, sampleAvg*2, LINEARBLEND);  // Use the my own palette.
+    color = ColorFromPalette(currentPalette, index, sound*2, LINEARBLEND);  // Use the my own palette.
     setPixelColor(i, color.red, color.green, color.blue);                       // This is a simple y=mx+b equation that's been scaled. index/128 is another scaling.
   }
 
