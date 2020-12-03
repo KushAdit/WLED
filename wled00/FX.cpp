@@ -4279,18 +4279,15 @@ uint16_t WS2812FX::mode_freqmatrix(void) {        // Freqmatrix. By Andreas Ples
 
     uint32_t *leds = ledData;
 
-    double sensitivity = mapf(SEGMENT.fft3, 1, 255, 1, 10);
     int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
     gotSoundFr = true;
-    int pixVal = sound * SEGMENT.intensity / 256 * sensitivity;
+    int pixVal = sound * SEGMENT.intensity / 10;
     if (pixVal > 255) pixVal = 255;
-
-    double intensity = map(pixVal, 0, 255, 0, 100) / 100.0;     // make a brightness from the last avg
 
     CRGB color = 0;
     CHSV c;
 
-    if (FFT_MajorPeak > 5120) FFT_MajorPeak = 0;
+    if (FFT_MajorPeak > 3519) FFT_MajorPeak = 0;
       // MajorPeak holds the freq. value which is most abundant in the last sample.
       // With our sampling rate of 10240Hz we have a usable freq range from roughtly 80Hz to 10240/2 Hz
       // we will treat everything with less than 65Hz as 0
@@ -4298,12 +4295,18 @@ uint16_t WS2812FX::mode_freqmatrix(void) {        // Freqmatrix. By Andreas Ples
     if (FFT_MajorPeak < 80) {
       color = CRGB::Black;
     } else {
-      int upperLimit = 20 * SEGMENT.fft2;
-      int lowerLimit = 2 * SEGMENT.fft1;
-      int i =  map(FFT_MajorPeak, lowerLimit, upperLimit, 0, 255);
-      uint16_t b = 255 * intensity;
-      if (b > 255) b=255;
-      c = CHSV(i, 240, (uint8_t)b);
+         int i=0;
+      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
+      i =  map(FFT_MajorPeak, 60, 219, 0, 255);
+      else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
+      i =  map(FFT_MajorPeak, 220, 439, 0, 255);
+      else if(FFT_MajorPeak>=440 && FFT_MajorPeak<=879)
+      i =  map(FFT_MajorPeak, 440, 879, 0, 255);
+      else if(FFT_MajorPeak>=880 && FFT_MajorPeak<=1759)
+      i =  map(FFT_MajorPeak, 880, 1759, 0, 255);
+      else if(FFT_MajorPeak>=1760 && FFT_MajorPeak<=3519)
+      i =  map(FFT_MajorPeak, 1760, 3519, 0, 255);
+      c = CHSV(i, 240, (uint8_t)pixVal);
     }
 
     // Serial.println(color);

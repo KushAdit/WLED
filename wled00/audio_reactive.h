@@ -22,7 +22,7 @@
   const int BLOCK_SIZE = 64;
 #endif
 
-const int SAMPLE_RATE = 10240; // was 16000 for digital mic
+const int SAMPLE_RATE = 5120; // was 16000 for digital mic
 
 #ifdef ESP32
   TaskHandle_t FFT_Task;
@@ -107,7 +107,7 @@ int getSampleAvg()
     
   if (sAmplenum != 0){
     sound15msAvg = sound15msAvg / sAmplenum;
-    sound15msAvg = sound15msAvg * sampleGain / 40 + sound15msAvg / 16;
+    sound15msAvg = sound15msAvg * sampleGain ;
   }
     else
     sound15msAvg=0;
@@ -115,7 +115,7 @@ int getSampleAvg()
   //Serial.println(n);
   sAmplenum = 0;
     sound15msBass = ((3 * fftResultBass[0]) + (3 * fftResultBass[1]) + (2 * fftResultBass[2]) + (2 * fftResultBass[3]) + fftResultBass[4]) / 11;
-    sound15msBass = sound15msBass * sampleGain / 40 + sound15msBass / 16;
+    sound15msBass = sound15msBass * sampleGain ;
   return sound15msAvg;
 
 }
@@ -139,7 +139,7 @@ int getSampleFr()
     
   if (sAmplenumFr != 0){
     soundFr = soundFr / sAmplenumFr;
-    soundFr = soundFr * sampleGain / 40 + soundFr / 16;
+    soundFr = soundFr * sampleGain ;
   }
     else
     soundFr=0;
@@ -147,7 +147,7 @@ int getSampleFr()
   //Serial.println(n);
   sAmplenumFr = 0;
     sound15msBass = ((3 * fftResultBass[0]) + (3 * fftResultBass[1]) + (2 * fftResultBass[2]) + (2 * fftResultBass[3]) + fftResultBass[4]) / 11;
-    sound15msBass = sound15msBass * sampleGain / 40 + sound15msBass / 16;
+    sound15msBass = sound15msBass * sampleGain ;
   return soundFr;
 
 }
@@ -268,7 +268,7 @@ void agcAvg() {                                                     // A simple 
     return;
   }  // transmitAudioData()
 
-  const uint16_t samples = 512;                     // This value MUST ALWAYS be a power of 2
+  const uint16_t samples = 64;                     // This value MUST ALWAYS be a power of 2
   // The line below was replaced by  'const int SAMPLE_RATE = 10240'
   //const double samplingFrequency = 10240;           // Sampling frequency in Hz
   unsigned int sampling_period_us;
