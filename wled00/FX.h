@@ -566,6 +566,7 @@ class WS2812FX {
       blurRows( CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount),
       blurColumns(CRGB* leds, uint8_t width, uint8_t height, fract8 blur_amount);
 
+
     bool
       reverseMode = false,      //is the entire LED strip reversed?
       gammaCorrectBri = false,
@@ -873,7 +874,7 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 
 
 const char JSON_palette_names[] PROGMEM = R"=====([
-"Default","* Cycle Palettes","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
+"Wheel","* Cycle Palettes","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
 "Forest","Rainbow","Rainbow Bands","Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",
 "Pastel","Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
 "Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
