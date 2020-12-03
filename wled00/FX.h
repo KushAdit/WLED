@@ -89,7 +89,7 @@
 
 # define SAMPLES 10
 # define PEAK_FALL 3
-extern int sAmple[200];
+extern int sAmple[400];
 extern uint8_t sAmplenum;
 extern int sound15msAvg;
 extern int dampSound15msAvg;
@@ -98,6 +98,11 @@ extern int dampSound15msBass;
 extern double fftResultBass[5];
 int getSound(bool b, bool g);
 int getSampleAvg();
+int getSoundFr(bool b, bool g);
+int getSampleFr();
+extern int sAmpleFr[400];
+extern uint8_t sAmplenumFr;
+extern int soundFr;
 
 // some common colors
 #define RED        (uint32_t)0xFF0000
@@ -798,6 +803,7 @@ class WS2812FX {
       _skipFirstMode,
       _triggered;
     bool gotSound=false;
+    bool gotSoundFr=false;
 
     mode_ptr _mode[MODE_COUNT]; // SRAM footprint: 4 bytes per element
 

@@ -72,7 +72,10 @@ uint16_t lastSample;                                // last audio noise sample
 
 uint8_t myVals[32];                                 // Used to store a pile of samples as WLED frame rate and WLED sample rate are not synchronized
 
-int sAmple[200];
+int sAmpleFr[400];
+uint8_t sAmplenumFr = 0;
+int soundFr=0;
+int sAmple[400];
 uint8_t sAmplenum = 0;
 int sound15msAvg=0;
 int dampSound15msAvg=0;
@@ -123,6 +126,38 @@ int getSound(bool b, bool g){
   getSampleAvg();
   if(!b)
   sound= sound15msAvg;
+  else
+  sound= sound15msBass;
+return sound;
+}
+
+int getSampleFr()
+{
+  for (int i = 0; i < sAmplenumFr; i++) {
+    soundFr += sAmpleFr[i];
+  }
+    
+  if (sAmplenumFr != 0){
+    soundFr = soundFr / sAmplenumFr;
+    soundFr = soundFr * sampleGain / 40 + soundFr / 16;
+  }
+    else
+    soundFr=0;
+    Serial.println(sAmplenumFr);
+  //Serial.println(n);
+  sAmplenumFr = 0;
+    sound15msBass = ((3 * fftResultBass[0]) + (3 * fftResultBass[1]) + (2 * fftResultBass[2]) + (2 * fftResultBass[3]) + fftResultBass[4]) / 11;
+    sound15msBass = sound15msBass * sampleGain / 40 + sound15msBass / 16;
+  return soundFr;
+
+}
+
+int getSoundFr(bool b, bool g){
+  int sound;
+  if(!g)
+  getSampleFr();
+  if(!b)
+  sound= soundFr;
   else
   sound= sound15msBass;
 return sound;
@@ -288,8 +323,11 @@ void agcAvg() {                                                     // A simple 
           sAmple[sAmplenum] = rawMicData;         
           sAmple[sAmplenum] = abs(sAmple[sAmplenum] - 450 ); // Center on zero
           sAmple[sAmplenum] = (sAmple[sAmplenum] <= soundSquelch) ? 0 : (sAmple[sAmplenum] - soundSquelch); // Remove noise/hum
-          if (sAmple[sAmplenum] > 1 && sAmplenum < 200)
+          sAmpleFr[sAmplenumFr] = sAmple[sAmplenum];
+          if (sAmple[sAmplenum] > 1 && sAmplenum < 400)
             sAmplenum++;
+          if (sAmpleFr[sAmplenumFr] > 1 && sAmplenumFr < 400)
+          sAmplenumFr++;
         } else {
           int32_t digitalSample = 0;
           int bytes_read = i2s_pop_sample(I2S_PORT, (char *)&digitalSample, portMAX_DELAY); // no timeout

@@ -4280,7 +4280,9 @@ uint16_t WS2812FX::mode_freqmatrix(void) {        // Freqmatrix. By Andreas Ples
     uint32_t *leds = ledData;
 
     double sensitivity = mapf(SEGMENT.fft3, 1, 255, 1, 10);
-    int pixVal = sampleAvg * SEGMENT.intensity / 256 * sensitivity;
+    int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
+    gotSoundFr = true;
+    int pixVal = sound * SEGMENT.intensity / 256 * sensitivity;
     if (pixVal > 255) pixVal = 255;
 
     double intensity = map(pixVal, 0, 255, 0, 100) / 100.0;     // make a brightness from the last avg
@@ -4328,7 +4330,7 @@ uint16_t WS2812FX::mode_freqmatrix(void) {        // Freqmatrix. By Andreas Ples
   fade_out(224);
 #endif // ESP8266
 
-  return FRAMETIME;
+  return 0;
 } // mode_freqmatrix()
 
 
