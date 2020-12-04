@@ -2530,7 +2530,7 @@ typedef struct Ball {
 */
 uint16_t WS2812FX::mode_bouncing_balls(void) {
   //allocate segment data
-  uint16_t maxNumBalls = 16;
+  uint16_t maxNumBalls = 4;
   uint16_t dataSize = sizeof(ball) * maxNumBalls;
   if (!SEGENV.allocateData(dataSize)) return mode_static(); //allocation failed
 
@@ -4348,14 +4348,59 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
   uint16_t fadeRate = 2*SEGMENT.speed - SEGMENT.speed*SEGMENT.speed/255;  // Get to 255 as quick as you can.
   fade_out(fadeRate);
   uint16_t locn = random16(0,SEGLEN);
-  uint8_t pixCol = (log10((int)FFT_MajorPeak) - 2.26) * 177;              // log10 frequency range is from 2.26 to 3.7. Let's scale accordingly.
-  setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(SEGMENT.intensity+pixCol, false, PALETTE_SOLID_WRAP, 0), (int)FFT_Magnitude>>8));
+ // uint8_t pixCol = (log10((int)FFT_MajorPeak) - 2.26) * 177;              // log10 frequency range is from 2.26 to 3.7. Let's scale accordingly.
+ // setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(SEGMENT.intensity+pixCol, false, PALETTE_SOLID_WRAP, 0), (int)FFT_Magnitude>>3));
 
+    uint32_t* leds = ledData;
+    int sound = getSound(SEGMENT.bass, gotSound);
+    gotSound = true;
+    int pixVal = sound * SEGMENT.intensity / 10;
+    if (pixVal > 255) pixVal = 255;
+
+
+    CRGB color = 0;
+    CHSV c;
+
+    if (FFT_MajorPeak > 3520) FFT_MajorPeak = 0;
+      // MajorPeak holds the freq. value which is most abundant in the last sample.
+      // With our sampling rate of 10240Hz we have a usable freq range from roughtly 80Hz to 10240/2 Hz
+      // we will treat everything with less than 65Hz as 0
+      //Serial.printf("%5d ", FFT_MajorPeak, 0);
+    if (FFT_MajorPeak < 80) {
+      color = CRGB::Black;
+    } else {
+         int i=0;
+      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
+      i =  map(FFT_MajorPeak, 60, 219, 0, 255);
+      else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
+      i =  map(FFT_MajorPeak, 220, 439, 0, 255);
+      else if(FFT_MajorPeak>=440 && FFT_MajorPeak<=879)
+      i =  map(FFT_MajorPeak, 440, 879, 0, 255);
+      else if(FFT_MajorPeak>=880 && FFT_MajorPeak<=1759)
+      i =  map(FFT_MajorPeak, 880, 1759, 0, 255);
+      else if(FFT_MajorPeak>=1760 && FFT_MajorPeak<=3519)
+      i =  map(FFT_MajorPeak, 1760, 3519, 0, 255);
+
+      c = CHSV(i, 240, (uint8_t)pixVal);
+    }
+
+    // Serial.println(color);
+    leds[locn] =  (c.h << 16) + (c.s << 8)  + (c.v );
+
+
+    // DISPLAY ARRAY
+
+      c.h = (leds[locn] >> 16) & 0xFF;
+      c.s = (leds[locn] >> 8) &0xFF;
+      c.v = leds[locn] & 0xFF;  
+      color = c;                                                        // implicit conversion to RGB supplied by FastLED
+      setPixelColor(locn, color.red, color.green, color.blue);
+    
 #else
   fade_out(224);
 #endif // ESP8266
 
-  return FRAMETIME;
+  return 0;
 } // mode_freqpixel()
 
 
@@ -4383,28 +4428,24 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
 // As a compromise between speed and accuracy we are currently sampling with 10240Hz, from which we can then determine with a 512bin FFT our max frequency is 5120Hz.
 // Depending on the music stream you have you might find it useful to change the frequency mapping.
 
-  #ifdef ESP32
+#ifdef ESP32
   static unsigned long prevMillis;
   unsigned long curMillis = millis();
 
   if ((curMillis - prevMillis) >= ((256-SEGMENT.speed) >>2)) {
     prevMillis = curMillis;
 
-    uint32_t* leds = ledData;
+    uint32_t *leds = ledData;
 
-    //uint8_t fade = SEGMENT.fft3;
-    //uint8_t fadeval;
-
-    double sensitivity = mapf(SEGMENT.fft3, 1, 255, 1, 10);
-    int pixVal = sampleAvg * SEGMENT.intensity / 256 * sensitivity;
+    int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
+    gotSoundFr = true;
+    int pixVal = sound * SEGMENT.intensity / 10;
     if (pixVal > 255) pixVal = 255;
-
-    double intensity = map(pixVal, 0, 255, 0, 100) / 100.0;             // make a brightness from the last avg
 
     CRGB color = 0;
     CHSV c;
 
-    if (FFT_MajorPeak > 5120) FFT_MajorPeak = 0;
+    if (FFT_MajorPeak > 3519) FFT_MajorPeak = 0;
       // MajorPeak holds the freq. value which is most abundant in the last sample.
       // With our sampling rate of 10240Hz we have a usable freq range from roughtly 80Hz to 10240/2 Hz
       // we will treat everything with less than 65Hz as 0
@@ -4412,31 +4453,37 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
     if (FFT_MajorPeak < 80) {
       color = CRGB::Black;
     } else {
-      int upperLimit = 20 * SEGMENT.fft2;
-      int lowerLimit = 2 * SEGMENT.fft1;
-      int i =  map(FFT_MajorPeak, lowerLimit, upperLimit, 0, 255);
-      uint16_t b = 255 * intensity;
-      if (b > 255) b=255;
-      c = CHSV(i, 240, (uint8_t)b);
+         int i=0;
+      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
+      i =  map(FFT_MajorPeak, 60, 219, 0, 255);
+      else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
+      i =  map(FFT_MajorPeak, 220, 439, 0, 255);
+      else if(FFT_MajorPeak>=440 && FFT_MajorPeak<=879)
+      i =  map(FFT_MajorPeak, 440, 879, 0, 255);
+      else if(FFT_MajorPeak>=880 && FFT_MajorPeak<=1759)
+      i =  map(FFT_MajorPeak, 880, 1759, 0, 255);
+      else if(FFT_MajorPeak>=1760 && FFT_MajorPeak<=3519)
+      i =  map(FFT_MajorPeak, 1760, 3519, 0, 255);
+      c = CHSV(i, 240, (uint8_t)pixVal);
     }
 
     // Serial.println(color);
-    leds[SEGLEN/2] =  (c.h << 16) + (c.s << 8)  + (c.v );
+    leds[0] =  (c.h << 16) + (c.s << 8)  + (c.v );
 
-// shift the pixels one pixel outwards
-    for (int i = SEGLEN; i > SEGLEN/2; i--) {                           // Move to the right.
+    // shift the pixels one pixel up
+    for (int i = SEGLEN; i > 0; i--) {                          // Move up
       leds[i] = leds[i-1];
     }
-    for (int i = 0; i < SEGLEN/2; i++) {                                // Move to the left.
-      leds[i] = leds[i+1];
-    }
+
+    //fadeval = fade;
 
     // DISPLAY ARRAY
     for (int i= 0; i < SEGLEN; i++) {
       c.h = (leds[i] >> 16) & 0xFF;
       c.s = (leds[i] >> 8) &0xFF;
       c.v = leds[i] & 0xFF;
-      color = c;                                                        // implicit conversion to RGB supplied by FastLED
+      c.v = qsub8(c.v,map(i,0,SEGLEN,0,200));  
+      color = c;                                                // implicit conversion to RGB supplied by FastLED
       setPixelColor(i, color.red, color.green, color.blue);
     }
   }
@@ -4445,7 +4492,7 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
   fade_out(224);
 #endif // ESP8266
 
-  return FRAMETIME;
+  return 0;
 } // mode_freqwave()
 
 
@@ -5194,3 +5241,59 @@ uint16_t WS2812FX::mode_2Dmeatballs(void) {   // Metaballs by Stefan Petrick. Ca
 
   return FRAMETIME;
 } // mode_2Dmeatballs()
+
+uint16_t WS2812FX::mode_visualizer(void) {
+
+  CRGB *leds = (CRGB*) ledData;
+  uint16_t height = 0;
+  int x=_segment_index;
+  bool bass= SEGMENT.bass;
+
+  int sound = getSound(bass, gotSound);
+  gotSound = true;
+
+  if(!bass){
+  dampSound15msAvg = ((dampSound15msAvg*1)+ sound)/2;
+  height = SEGLEN * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]); 
+  volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
+  volArrayCount = ++volArrayCount % SAMPLES;
+  }
+  else{
+    dampSound15msBass = ((dampSound15msBass*2)+ sound)/3;
+  height = dampSound15msBass * (SEGMENT.intensity) / 64;                  // Too sensitive.
+  height = height * (SEGMENT.intensity) / 64;                              // Reduce sensitity/length.
+  }
+  height = constrain(height, 0, SEGLEN);
+
+ fill_gradient(leds, 0, CHSV(96, 255, 255), SEGLEN - 1, CHSV(224, 255, 255), SHORTEST_HUES);
+  for (int i = height; i < SEGLEN; i++) { 
+    leds[i] = CRGB::Black;
+  }
+  if (height > peak[x])
+    peak[x] = height;  
+  if (peak[x] > 0 && peak[x] <= SEGLEN)
+    leds[peak[x]] = CHSV(90 - peak[x] * (145 / SEGLEN), 255, 255); // Set peak colour correctly
+
+  static uint8_t dotCountLeft;
+  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed,0,255,7,1)==0) { //make peak fall at fall rate
+    if (peak[x] > 0) peak[x]--;
+  }
+if(!bass){
+  uint16_t minLvl, maxLvl;
+    minLvl = maxLvl = volArrayVar[0];
+  for (int j = 1; j < SAMPLES; j++) {
+    if (volArrayVar[j] < minLvl) minLvl = volArrayVar[j];
+    else if (volArrayVar[j] > maxLvl) maxLvl = volArrayVar[j];
+  }
+   uint8_t y = map(SEGMENT.intensity,0,255,10,128);
+   if ((maxLvl - minLvl) < SEGLEN) maxLvl = minLvl + SEGLEN;
+  minLvlAvg[x] = (minLvlAvg[x] * y + minLvl) / (y + 1); // Dampen min/max levels
+  maxLvlAvg[x] = (maxLvlAvg[x] * y + maxLvl) / (y + 1); // (fake rolling average)
+}
+
+  for (int i = 0; i < SEGLEN; i++) {
+    setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
+  }
+  return 0;
+
+}

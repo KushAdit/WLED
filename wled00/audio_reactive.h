@@ -82,6 +82,11 @@ int dampSound15msAvg=0;
 int sound15msBass=0;
 int dampSound15msBass=0;
 double fftResultBass[5];
+uint8_t peak[16];
+uint8_t volArrayCount = 0 ;         // Frame counter for storing past volume data
+int volArrayVar[SAMPLES];               // Collection of prior volume samples
+int minLvlAvg[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} ;            // For dynamic adjustment of graph low & high
+int maxLvlAvg[16]={500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500} ;
 
 struct audioSyncPacket {
   char header[6] = UDP_SYNC_HEADER;
