@@ -88,7 +88,6 @@
 #define RESET_RUNTIME    memset(_segment_runtimes, 0, sizeof(_segment_runtimes))
 
 # define SAMPLES 10
-# define PEAK_FALL 3
 extern int sAmple[400];
 extern uint8_t sAmplenum;
 extern int sound15msAvg;
@@ -103,6 +102,11 @@ int getSampleFr();
 extern int sAmpleFr[400];
 extern uint8_t sAmplenumFr;
 extern int soundFr;
+extern  uint8_t peak[16];
+extern  uint8_t volArrayCount;         // Frame counter for storing past volume data
+extern  int volArrayVar[SAMPLES];               // Collection of prior volume samples
+extern  int minLvlAvg[16];            // For dynamic adjustment of graph low & high
+extern  int maxLvlAvg[16];
 
 // some common colors
 #define RED        (uint32_t)0xFF0000
@@ -137,7 +141,7 @@ extern int soundFr;
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT                     143
+#define MODE_COUNT                     144
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -282,6 +286,7 @@ extern int soundFr;
 #define FX_MODE_2DMATRIX               140
 #define FX_MODE_2DMEATBALLS            141
 #define FX_FFT_TEST                    142
+#define FX_MODE_VISUALIZER                   143
 
 
 // Sound reactive external variables
@@ -529,6 +534,7 @@ class WS2812FX {
       _mode[FX_MODE_2DMATRIX]                = &WS2812FX::mode_2Dmatrix;
       _mode[FX_MODE_2DMEATBALLS]             = &WS2812FX::mode_2Dmeatballs;
       _mode[FX_FFT_TEST]                     = &WS2812FX::fft_test;
+      _mode[FX_MODE_VISUALIZER]              = &WS2812FX::mode_visualizer;
 
       _brightness = DEFAULT_BRIGHTNESS;
       currentPalette = CRGBPalette16(CRGB::Black);
@@ -779,7 +785,8 @@ class WS2812FX {
       mode_2Ddna(void),
       mode_2Dmatrix(void),
       mode_2Dmeatballs(void),
-      fft_test(void);
+      fft_test(void),
+      mode_visualizer(void);
 
   private:
     NeoPixelWrapper *bus;
@@ -874,7 +881,7 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Flow","Chunchun","Dancing Shadows","Washing Machine","* Pixels","* Pixelwave","* Juggles","* Matripix","* Gravimeter","* Plasmoid",
 "* Puddles","* Midnoise","* Noisemeter","** Freqwave","** Freqmatrix","** Spectral","* Waterfall","** Freqpixel","** Binmap","** Noisepeak",
 "* Noisefire","* Puddlepeak","** Noisemove","* Cycle Effects","Perlin Move","* Ripple Peak","Firebase","Squirrels","Fire High Flames","Time Traveller",
-"Matrix","White Fusion","** FFT_TEST"
+"Matrix","White Fusion","** FFT_TEST","** Visualizer"
 ])=====";
 
 

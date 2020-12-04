@@ -4348,8 +4348,8 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
   uint16_t fadeRate = 2*SEGMENT.speed - SEGMENT.speed*SEGMENT.speed/255;  // Get to 255 as quick as you can.
   fade_out(fadeRate);
   uint16_t locn = random16(0,SEGLEN);
-  uint8_t pixCol = (log10((int)FFT_MajorPeak) - 2.26) * 177;              // log10 frequency range is from 2.26 to 3.7. Let's scale accordingly.
-  setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(SEGMENT.intensity+pixCol, false, PALETTE_SOLID_WRAP, 0), (int)FFT_Magnitude>>3));
+ // uint8_t pixCol = (log10((int)FFT_MajorPeak) - 2.26) * 177;              // log10 frequency range is from 2.26 to 3.7. Let's scale accordingly.
+ // setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(SEGMENT.intensity+pixCol, false, PALETTE_SOLID_WRAP, 0), (int)FFT_Magnitude>>3));
 
     uint32_t* leds = ledData;
     int sound = getSound(SEGMENT.bass, gotSound);
@@ -4370,7 +4370,7 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
       color = CRGB::Black;
     } else {
          int i=0;
-      if(FFT_MajorPeak>=110 && FFT_MajorPeak<=219)
+      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
       i =  map(FFT_MajorPeak, 60, 219, 0, 255);
       else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
       i =  map(FFT_MajorPeak, 220, 439, 0, 255);
@@ -5241,3 +5241,59 @@ uint16_t WS2812FX::mode_2Dmeatballs(void) {   // Metaballs by Stefan Petrick. Ca
 
   return FRAMETIME;
 } // mode_2Dmeatballs()
+
+uint16_t WS2812FX::mode_visualizer(void) {
+
+  CRGB *leds = (CRGB*) ledData;
+  uint16_t height = 0;
+  int x=_segment_index;
+  bool bass= SEGMENT.bass;
+
+  int sound = getSound(bass, gotSound);
+  gotSound = true;
+
+  if(!bass){
+  dampSound15msAvg = ((dampSound15msAvg*1)+ sound)/2;
+  height = SEGLEN * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]); 
+  volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
+  volArrayCount = ++volArrayCount % SAMPLES;
+  }
+  else{
+    dampSound15msBass = ((dampSound15msBass*2)+ sound)/3;
+  height = dampSound15msBass * (SEGMENT.intensity) / 64;                  // Too sensitive.
+  height = height * (SEGMENT.intensity) / 64;                              // Reduce sensitity/length.
+  }
+  height = constrain(height, 0, SEGLEN);
+
+ fill_gradient(leds, 0, CHSV(96, 255, 255), SEGLEN - 1, CHSV(224, 255, 255), SHORTEST_HUES);
+  for (int i = height; i < SEGLEN; i++) { 
+    leds[i] = CRGB::Black;
+  }
+  if (height > peak[x])
+    peak[x] = height;  
+  if (peak[x] > 0 && peak[x] <= SEGLEN)
+    leds[peak[x]] = CHSV(90 - peak[x] * (145 / SEGLEN), 255, 255); // Set peak colour correctly
+
+  static uint8_t dotCountLeft;
+  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed,0,255,7,1)==0) { //make peak fall at fall rate
+    if (peak[x] > 0) peak[x]--;
+  }
+if(!bass){
+  uint16_t minLvl, maxLvl;
+    minLvl = maxLvl = volArrayVar[0];
+  for (int j = 1; j < SAMPLES; j++) {
+    if (volArrayVar[j] < minLvl) minLvl = volArrayVar[j];
+    else if (volArrayVar[j] > maxLvl) maxLvl = volArrayVar[j];
+  }
+   uint8_t y = map(SEGMENT.intensity,0,255,10,128);
+   if ((maxLvl - minLvl) < SEGLEN) maxLvl = minLvl + SEGLEN;
+  minLvlAvg[x] = (minLvlAvg[x] * y + minLvl) / (y + 1); // Dampen min/max levels
+  maxLvlAvg[x] = (maxLvlAvg[x] * y + maxLvl) / (y + 1); // (fake rolling average)
+}
+
+  for (int i = 0; i < SEGLEN; i++) {
+    setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
+  }
+  return 0;
+
+}
