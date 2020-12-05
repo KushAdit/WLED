@@ -3731,6 +3731,21 @@ uint16_t WS2812FX::mode_washing_machine(void) {
 //    Start of Audio Reactive fork, beginning with non-reactive routines   //
 /////////////////////////////////////////////////////////////////////////////
 
+#ifdef ESP32
+extern double FFT_MajorPeak;
+extern double FFT_Magnitude;
+extern double fftBin[];                     // raw FFT data
+extern double fftResult[];                  // summary of bins array. 16 summary bins.
+extern double beat;
+extern uint16_t lastSample;
+double volume = 1;
+uint32_t ledData[MAX_LEDS];                 // See const.h for a value of 1500.
+uint32_t dataStore[4096];										// we are declaring a storage area or 64 x 64 (4096) words.
+
+double mapf(double x, double in_min, double in_max, double out_min, double out_max){
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+#endif // ESP8266
 
 /////////////////////////
 //     Perlin Move     //
@@ -3760,12 +3775,6 @@ uint16_t WS2812FX::mode_perlinmove(void) {
 
 uint16_t WS2812FX::mode_pixels(void) {              // Pixels. By Andrew Tuline.
 
-  fade_out(4);
-
-  for (int i=0; i <SEGMENT.intensity/16; i++) {
-    uint16_t segLoc = random(SEGLEN);               // 16 bit for larger strands of LED's.
-    setPixelColor(segLoc, color_blend(SEGCOLOR(1), color_from_palette(myVals[i%32]+i*4, false, PALETTE_SOLID_WRAP, 0), sampleAgc));
-  }
 
   return FRAMETIME;
 } // mode_pixels()
@@ -3799,97 +3808,92 @@ uint16_t WS2812FX::mode_pixelwave(void) {                                 // Pix
 //   * JUGGLES      //
 //////////////////////
 
-uint16_t WS2812FX::mode_juggles(void) {                                   // Juggles. By Andrew Tuline.
-
-  static int thistime = 20;
-
-  EVERY_N_MILLISECONDS_I(pixTimer, SEGMENT.speed) {                       // Using FastLED's timer. You want to change speed? You need to
-
-    pixTimer.setPeriod((256 - SEGMENT.speed) >> 2);                       // change it down here!!! By Andrew Tuline.
-
+uint16_t WS2812FX::mode_juggles(void)
+{ // Juggles. By Andrew Tuline.
+  int sound = getSound(SEGMENT.bass, gotSound);
+  gotSound = true;
+  CHSV c;
+  if (!SEGMENT.palette)
+  {
+    if (FFT_MajorPeak > 3520)
+      FFT_MajorPeak = 0;
+    int i = getColorFromFr(FFT_MajorPeak);
+    c = CHSV(i, 240, constrain((uint8_t)sound * SEGMENT.intensity / 10, 0, 255));
+  }
+  EVERY_N_MILLISECONDS_I(pixTimer, SEGMENT.speed)
+  {                                                 // Using FastLED's timer. You want to change speed? You need to
+    pixTimer.setPeriod((256 - SEGMENT.speed) >> 2); // change it down here!!! By Andrew Tuline.
     fade_out(224);
-
-    for (int i=0; i<SEGMENT.intensity/32; i++) {
-      setPixelColor(beatsin16(thistime+i*2,0,SEGLEN-1), color_blend(SEGCOLOR(1), color_from_palette(millis()/4+i*2, false, PALETTE_SOLID_WRAP, 0), sampleAgc));
+    CRGB color = c;
+    for (int i = 0; i < SEGMENT.intensity / 32; i++)
+    {
+      if (!SEGMENT.palette)
+        setPixelColor(beatsin16(20 + i * 2, 0, SEGLEN - 1), color.r, color.g, color.b);
+      else
+        setPixelColor(beatsin16(20 + i * 2, 0, SEGLEN - 1), color_from_palette(beatsin16(20 + i * 2, 0, SEGLEN - 1), true, true, 255, constrain((uint8_t)sound * SEGMENT.intensity / 10, 0, 255)));
     }
   }
 
   return FRAMETIME;
 } // mode_juggles()
 
-
 //////////////////////
 //   * MATRIPIX     //
 //////////////////////
 
-uint16_t WS2812FX::mode_matripix(void) {                                  // Matripix. By Andrew Tuline.
+uint16_t WS2812FX::mode_matripix(void)
+{ // Matripix. By Andrew Tuline.
+  CRGB *leds = (CRGB *)ledData;
+  uint16_t height = 0;
+  int x = _segment_index;
+  static unsigned long prevMillis;
+  unsigned long curMillis = millis();
 
-  EVERY_N_MILLISECONDS_I(pixTimer, SEGMENT.speed) {                       // Using FastLED's timer. You want to change speed? You need to . .
+  if ((curMillis - prevMillis) >= ((256 - SEGMENT.speed) >> 2))
+  {
+    prevMillis = curMillis;
+    int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
+    gotSoundFr = true;
+    // check for orientation, slider in first quarter, default orientation
+    for (int16_t i = 0; i <= SEGLEN - 1; i++)
+    {
+      if (leds[i] == CRGB(125, 255, 125))
+      {
+        leds[i] = CRGB(27, 130, 39); // create trail
+        if (i > 0)
+          leds[i - 1] = CRGB(125, 255, 125);
+      }
+    }
 
-    pixTimer.setPeriod((256 - SEGMENT.speed) >> 2);                       // change it down here!!!
-    int pixBri = sample * SEGMENT.intensity / 64;
-    setPixelColor(SEGLEN-1, color_blend(SEGCOLOR(1), color_from_palette(millis(), false, PALETTE_SOLID_WRAP, 0), pixBri));
-    for (int i=0; i<SEGLEN-1; i++) setPixelColor(i,getPixelColor(i+1));
+    for (int i = 0; i < SEGLEN; i++)
+    {
+      if (leds[i].g != 255)
+        leds[i].nscale8(192); // only fade trail
+    }
 
+    height = SEGLEN * (sound - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]);
+    height = constrain(height, 0, SEGLEN);
+
+    if (height)
+    {
+      if (!leds[height - 1])
+        leds[height - 1] = CRGB(125, 255, 125);
+    }
+    updateMinMavVals(SEGMENT.intensity, x, SEGLEN);
+    for (int i = 0; i < SEGLEN; i++)
+    {
+      setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
+    }
   }
-
-  return FRAMETIME;
+  return 0;
 } // mode_matripix()
-
 
 ///////////////////////
 //   * GRAVIMETER    //
 ///////////////////////
 
 uint16_t WS2812FX::mode_gravimeter(void) {
-  uint16_t height = 0;
-  int x = _segment_index;
-  bool bass = SEGMENT.bass;
-  int y = SEGMENT.intensity;
-  int s = SEGLEN;
-  int sound = getSound(bass, gotSound);
-  gotSound = true;
 
-  if (!bass)
-  {
-    dampSound15msAvg = ((dampSound15msAvg * 1) + sound) / 2;
-    height = s * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]);
-    volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
-    volArrayCount = ++volArrayCount % SAMPLES;
-    updateMinMavVals(y, x, s);
-  }
-  else
-  {
-    dampSound15msBass = ((dampSound15msBass * 2) + sound) / 3;
-    height = dampSound15msBass * (y) / 64; // Too sensitive.
-    height = height * (y) / 64;            // Reduce sensitity/length.
-  }
-  height = constrain(height, 0, s);
-
-  for (int i = 0; i < s; i++)
-  {
-    if (i >= height)
-      setPixelColor(i, 0);
-    else
-      setPixelColor(i, color_from_palette(i, true, true, 255));
-  }
-  if (height > peak[x])
-    peak[x] = height;
-  if (peak[x] > 0 && peak[x] <= s)
-  {
-    setPixelColor(peak[x], color_from_palette(peak[x], true, true, 255));
-    for (int i = peak[x] + 1; i < s; i++)
-    {
-      setPixelColor(i, 0);
-    }
-  }
-  static uint8_t dotCountLeft;
-  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 7, 1) == 0)
-  { 
-    if (peak[x] > 0)
-      peak[x]--;
-  }
-  return 0;
 } // mode_gravimeter()
 
 
@@ -4147,21 +4151,6 @@ uint16_t WS2812FX::mode_ripplepeak(void) {                    // * Ripple peak. 
 //     BEGIN FFT ROUTINES    //
 ///////////////////////////////
 
-#ifdef ESP32
-extern double FFT_MajorPeak;
-extern double FFT_Magnitude;
-extern double fftBin[];                     // raw FFT data
-extern double fftResult[];                  // summary of bins array. 16 summary bins.
-extern double beat;
-extern uint16_t lastSample;
-double volume = 1;
-uint32_t ledData[MAX_LEDS];                 // See const.h for a value of 1500.
-uint32_t dataStore[4096];										// we are declaring a storage area or 64 x 64 (4096) words.
-
-double mapf(double x, double in_min, double in_max, double out_min, double out_max){
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-#endif // ESP8266
 
 
 ///////////////////////
@@ -4367,8 +4356,6 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
     int pixVal = sound * SEGMENT.intensity / 10;
     if (pixVal > 255) pixVal = 255;
 
-
-    CRGB color = 0;
     CHSV c;
 
     if (FFT_MajorPeak > 3520) FFT_MajorPeak = 0;
@@ -4376,12 +4363,8 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
       // With our sampling rate of 10240Hz we have a usable freq range from roughtly 80Hz to 10240/2 Hz
       // we will treat everything with less than 65Hz as 0
       //Serial.printf("%5d ", FFT_MajorPeak, 0);
-    if (FFT_MajorPeak < 80) {
-      color = CRGB::Black;
-    } else {
          int i = getColorFromFr(FFT_MajorPeak);
       c = CHSV(i, 240, (uint8_t)pixVal);
-    }
 
     // Serial.println(color);
     leds[locn] =  (c.h << 16) + (c.s << 8)  + (c.v );
@@ -4392,7 +4375,7 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
       c.h = (leds[locn] >> 16) & 0xFF;
       c.s = (leds[locn] >> 8) &0xFF;
       c.v = leds[locn] & 0xFF;  
-      color = c;                                                        // implicit conversion to RGB supplied by FastLED
+      CRGB color = c;                                                        // implicit conversion to RGB supplied by FastLED
       setPixelColor(locn, color.red, color.green, color.blue);
     
 #else
