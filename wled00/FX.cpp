@@ -3841,35 +3841,55 @@ uint16_t WS2812FX::mode_matripix(void) {                                  // Mat
 //   * GRAVIMETER    //
 ///////////////////////
 
-uint16_t WS2812FX::mode_gravimeter(void) {                                // Gravmeter. By Andrew Tuline.
-
-  static int topLED;
-  static int gravityCounter = 0;
-
-  fade_out(240);
-
- // sampleAvg = sampleAvg * SEGMENT.intensity / 255;
-  int sound = getSound(SEGMENT.bass, gotSound);
+uint16_t WS2812FX::mode_gravimeter(void) {
+  uint16_t height = 0;
+  int x = _segment_index;
+  bool bass = SEGMENT.bass;
+  int y = SEGMENT.intensity;
+  int s = SEGLEN;
+  int sound = getSound(bass, gotSound);
   gotSound = true;
-  int tempsamp = constrain(sound*2,0,SEGLEN-1);                       // Keep the sample from overflowing.
-  uint8_t gravity = 8 - SEGMENT.speed/32;
 
-  for (int i=0; i<tempsamp; i++) {
-    uint8_t index = inoise8(i*sound+millis(), 5000+i*sound);
-    setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(index, false, PALETTE_SOLID_WRAP, 0), sound*8));
+  if (!bass)
+  {
+    dampSound15msAvg = ((dampSound15msAvg * 1) + sound) / 2;
+    height = s * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]);
+    volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
+    volArrayCount = ++volArrayCount % SAMPLES;
+    updateMinMavVals(y, x, s);
   }
-
-  if (tempsamp >= topLED)
-    topLED = tempsamp;
-  else if (gravityCounter % gravity == 0)
-    topLED--;
-
-  if (topLED > 0) {
-    setPixelColor(topLED, color_blend(SEGCOLOR(1), color_from_palette(millis(), false, PALETTE_SOLID_WRAP, 0), 255));
+  else
+  {
+    dampSound15msBass = ((dampSound15msBass * 2) + sound) / 3;
+    height = dampSound15msBass * (y) / 64; // Too sensitive.
+    height = height * (y) / 64;            // Reduce sensitity/length.
   }
-  gravityCounter = (gravityCounter + 1) % gravity;
+  height = constrain(height, 0, s);
 
-  return FRAMETIME;
+  for (int i = 0; i < s; i++)
+  {
+    if (i >= height)
+      setPixelColor(i, 0);
+    else
+      setPixelColor(i, color_from_palette(i, true, true, 255));
+  }
+  if (height > peak[x])
+    peak[x] = height;
+  if (peak[x] > 0 && peak[x] <= s)
+  {
+    setPixelColor(peak[x], color_from_palette(peak[x], true, true, 255));
+    for (int i = peak[x] + 1; i < s; i++)
+    {
+      setPixelColor(i, 0);
+    }
+  }
+  static uint8_t dotCountLeft;
+  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 7, 1) == 0)
+  { 
+    if (peak[x] > 0)
+      peak[x]--;
+  }
+  return 0;
 } // mode_gravimeter()
 
 
@@ -4295,17 +4315,7 @@ uint16_t WS2812FX::mode_freqmatrix(void) {        // Freqmatrix. By Andreas Ples
     if (FFT_MajorPeak < 80) {
       color = CRGB::Black;
     } else {
-         int i=0;
-      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
-      i =  map(FFT_MajorPeak, 60, 219, 0, 255);
-      else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
-      i =  map(FFT_MajorPeak, 220, 439, 0, 255);
-      else if(FFT_MajorPeak>=440 && FFT_MajorPeak<=879)
-      i =  map(FFT_MajorPeak, 440, 879, 0, 255);
-      else if(FFT_MajorPeak>=880 && FFT_MajorPeak<=1759)
-      i =  map(FFT_MajorPeak, 880, 1759, 0, 255);
-      else if(FFT_MajorPeak>=1760 && FFT_MajorPeak<=3519)
-      i =  map(FFT_MajorPeak, 1760, 3519, 0, 255);
+         int i = getColorFromFr(FFT_MajorPeak);
       c = CHSV(i, 240, (uint8_t)pixVal);
     }
 
@@ -4369,18 +4379,7 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
     if (FFT_MajorPeak < 80) {
       color = CRGB::Black;
     } else {
-         int i=0;
-      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
-      i =  map(FFT_MajorPeak, 60, 219, 0, 255);
-      else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
-      i =  map(FFT_MajorPeak, 220, 439, 0, 255);
-      else if(FFT_MajorPeak>=440 && FFT_MajorPeak<=879)
-      i =  map(FFT_MajorPeak, 440, 879, 0, 255);
-      else if(FFT_MajorPeak>=880 && FFT_MajorPeak<=1759)
-      i =  map(FFT_MajorPeak, 880, 1759, 0, 255);
-      else if(FFT_MajorPeak>=1760 && FFT_MajorPeak<=3519)
-      i =  map(FFT_MajorPeak, 1760, 3519, 0, 255);
-
+         int i = getColorFromFr(FFT_MajorPeak);
       c = CHSV(i, 240, (uint8_t)pixVal);
     }
 
@@ -4439,7 +4438,7 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
 
     int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
     gotSoundFr = true;
-    int pixVal = sound * SEGMENT.intensity / 10;
+    int pixVal = sound * SEGMENT.intensity / 15;
     if (pixVal > 255) pixVal = 255;
 
     CRGB color = 0;
@@ -4453,18 +4452,8 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
     if (FFT_MajorPeak < 80) {
       color = CRGB::Black;
     } else {
-         int i=0;
-      if(FFT_MajorPeak>=80 && FFT_MajorPeak<=219)
-      i =  map(FFT_MajorPeak, 60, 219, 0, 255);
-      else if(FFT_MajorPeak>=220 && FFT_MajorPeak<=439)
-      i =  map(FFT_MajorPeak, 220, 439, 0, 255);
-      else if(FFT_MajorPeak>=440 && FFT_MajorPeak<=879)
-      i =  map(FFT_MajorPeak, 440, 879, 0, 255);
-      else if(FFT_MajorPeak>=880 && FFT_MajorPeak<=1759)
-      i =  map(FFT_MajorPeak, 880, 1759, 0, 255);
-      else if(FFT_MajorPeak>=1760 && FFT_MajorPeak<=3519)
-      i =  map(FFT_MajorPeak, 1760, 3519, 0, 255);
-      c = CHSV(i, 240, (uint8_t)pixVal);
+         int i = getColorFromFr(FFT_MajorPeak);
+         c = CHSV(i, 240, (uint8_t)pixVal);
     }
 
     // Serial.println(color);
@@ -4482,7 +4471,7 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
       c.h = (leds[i] >> 16) & 0xFF;
       c.s = (leds[i] >> 8) &0xFF;
       c.v = leds[i] & 0xFF;
-      c.v = qsub8(c.v,map(i,0,SEGLEN,0,200));  
+      c.v = qsub8(c.v,i*6);  
       color = c;                                                // implicit conversion to RGB supplied by FastLED
       setPixelColor(i, color.red, color.green, color.blue);
     }
@@ -5242,58 +5231,54 @@ uint16_t WS2812FX::mode_2Dmeatballs(void) {   // Metaballs by Stefan Petrick. Ca
   return FRAMETIME;
 } // mode_2Dmeatballs()
 
-uint16_t WS2812FX::mode_visualizer(void) {
-
-  CRGB *leds = (CRGB*) ledData;
+uint16_t WS2812FX::mode_visualizer(void)
+{
   uint16_t height = 0;
-  int x=_segment_index;
-  bool bass= SEGMENT.bass;
-
+  int x = _segment_index;
+  bool bass = SEGMENT.bass;
+  int y = SEGMENT.intensity;
+  int s = SEGLEN;
   int sound = getSound(bass, gotSound);
   gotSound = true;
 
-  if(!bass){
-  dampSound15msAvg = ((dampSound15msAvg*1)+ sound)/2;
-  height = SEGLEN * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]); 
-  volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
-  volArrayCount = ++volArrayCount % SAMPLES;
+  if (!bass)
+  {
+    dampSound15msAvg = ((dampSound15msAvg * 1) + sound) / 2;
+    height = s * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]);
+    volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
+    volArrayCount = ++volArrayCount % SAMPLES;
+    updateMinMavVals(y, x, s);
   }
-  else{
-    dampSound15msBass = ((dampSound15msBass*2)+ sound)/3;
-  height = dampSound15msBass * (SEGMENT.intensity) / 64;                  // Too sensitive.
-  height = height * (SEGMENT.intensity) / 64;                              // Reduce sensitity/length.
+  else
+  {
+    dampSound15msBass = ((dampSound15msBass * 2) + sound) / 3;
+    height = dampSound15msBass * (y) / 64; // Too sensitive.
+    height = height * (y) / 64;            // Reduce sensitity/length.
   }
-  height = constrain(height, 0, SEGLEN);
+  height = constrain(height, 0, s);
 
- fill_gradient(leds, 0, CHSV(96, 255, 255), SEGLEN - 1, CHSV(224, 255, 255), SHORTEST_HUES);
-  for (int i = height; i < SEGLEN; i++) { 
-    leds[i] = CRGB::Black;
+  for (int i = 0; i < s; i++)
+  {
+    if (i >= height)
+      setPixelColor(i, 0);
+    else
+      setPixelColor(i, color_from_palette(i, true, true, 255));
   }
   if (height > peak[x])
-    peak[x] = height;  
-  if (peak[x] > 0 && peak[x] <= SEGLEN)
-    leds[peak[x]] = CHSV(90 - peak[x] * (145 / SEGLEN), 255, 255); // Set peak colour correctly
-
+    peak[x] = height;
+  if (peak[x] > 0 && peak[x] <= s)
+  {
+    setPixelColor(peak[x], color_from_palette(peak[x], true, true, 255));
+    for (int i = peak[x] + 1; i < s; i++)
+    {
+      setPixelColor(i, 0);
+    }
+  }
   static uint8_t dotCountLeft;
-  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed,0,255,7,1)==0) { //make peak fall at fall rate
-    if (peak[x] > 0) peak[x]--;
-  }
-if(!bass){
-  uint16_t minLvl, maxLvl;
-    minLvl = maxLvl = volArrayVar[0];
-  for (int j = 1; j < SAMPLES; j++) {
-    if (volArrayVar[j] < minLvl) minLvl = volArrayVar[j];
-    else if (volArrayVar[j] > maxLvl) maxLvl = volArrayVar[j];
-  }
-   uint8_t y = map(SEGMENT.intensity,0,255,10,128);
-   if ((maxLvl - minLvl) < SEGLEN) maxLvl = minLvl + SEGLEN;
-  minLvlAvg[x] = (minLvlAvg[x] * y + minLvl) / (y + 1); // Dampen min/max levels
-  maxLvlAvg[x] = (maxLvlAvg[x] * y + maxLvl) / (y + 1); // (fake rolling average)
-}
-
-  for (int i = 0; i < SEGLEN; i++) {
-    setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
+  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 7, 1) == 0)
+  { 
+    if (peak[x] > 0)
+      peak[x]--;
   }
   return 0;
-
 }

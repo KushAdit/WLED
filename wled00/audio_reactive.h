@@ -168,6 +168,34 @@ int getSoundFr(bool b, bool g){
 return sound;
 }
 
+void updateMinMavVals(uint8_t i,uint8_t x,uint8_t s){
+    uint16_t minLvl, maxLvl;
+    minLvl = maxLvl = volArrayVar[0];
+  for (int j = 1; j < SAMPLES; j++) {
+    if (volArrayVar[j] < minLvl) minLvl = volArrayVar[j];
+    else if (volArrayVar[j] > maxLvl) maxLvl = volArrayVar[j];
+  }
+   uint8_t y = map(i,0,255,10,128);
+   if ((maxLvl - minLvl) < s) maxLvl = minLvl + s;
+  minLvlAvg[x] = (minLvlAvg[x] * y + minLvl) / (y + 1); // Dampen min/max levels
+  maxLvlAvg[x] = (maxLvlAvg[x] * y + maxLvl) / (y + 1); // (fake rolling average)
+}
+
+int getColorFromFr(double f)
+{
+  int i = 0;
+  if (f >= 80 && f <= 219)
+    i = map(f, 60, 219, 0, 255);
+  else if (f >= 220 && f <= 439)
+    i = map(f, 220, 439, 0, 255);
+  else if (f >= 440 && f <= 879)
+    i = map(f, 440, 879, 0, 255);
+  else if (f >= 880 && f <= 1759)
+    i = map(f, 880, 1759, 0, 255);
+  else if (f >= 1760 && f <= 3519)
+    i = map(f, 1760, 3519, 0, 255);
+  return i;
+}
 /*
 void getSample() {
   static long peakTime;

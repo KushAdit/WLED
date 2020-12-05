@@ -99,6 +99,8 @@ int getSound(bool b, bool g);
 int getSampleAvg();
 int getSoundFr(bool b, bool g);
 int getSampleFr();
+void updateMinMavVals(uint8_t i,uint8_t x,uint8_t s);
+int getColorFromFr(double f);
 extern int sAmpleFr[400];
 extern uint8_t sAmplenumFr;
 extern int soundFr;
@@ -892,7 +894,7 @@ const char JSON_palette_names[] PROGMEM = R"=====([
 "Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
 "Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
 "Aurora","Atlantica","C9 2","C9 New","Retro Clown","Candy","Toxy Reaf","Fairy Reaf","Semi Blue","Pink Candy",
-"Red Reaf","Red & Flash","YBlue","Lite Light","Pink Plasma","Blink Red","Yellow 2 Blue","Yellow 2 Red","Candy2"
+"Red Reaf","Red & Flash","YBlue","Lite Light","Pink Plasma","Blink Red","Yellow 2 Blue","Yellow 2 Red","Candy2","Green2Red"
 ])=====";
 
 #endif
