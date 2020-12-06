@@ -861,6 +861,7 @@ void WS2812FX::handle_palette(void)
       case FX_MODE_SUNRISE    : paletteIndex = 35; break; //heat palette
       case FX_MODE_FLOW       : paletteIndex =  6; break; //party
       case FX_MODE_VISUALIZER       : paletteIndex =  69; break; //party
+      case FX_MODE_PLASMOID       : paletteIndex =  35; break; //party
     }
   }
   if (SEGMENT.mode >= FX_MODE_METEOR && paletteIndex == 0) paletteIndex = 4;
