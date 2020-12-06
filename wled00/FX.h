@@ -143,7 +143,7 @@ extern  int maxLvlAvg[16];
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT                     144
+#define MODE_COUNT                     142
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -259,37 +259,36 @@ extern  int maxLvlAvg[16];
 #define FX_MODE_CHUNCHUN               111
 #define FX_MODE_DANCING_SHADOWS        112
 #define FX_MODE_WASHING_MACHINE        113
-#define FX_MODE_PIXELS                 114
-#define FX_MODE_PIXELWAVE              115
-#define FX_MODE_JUGGLES                116
-#define FX_MODE_MATRIPIX               117
-#define FX_MODE_GRAVIMETER             118
-#define FX_MODE_PLASMOID               119
-#define FX_MODE_PUDDLES                120
-#define FX_MODE_MIDNOISE               121
-#define FX_MODE_NOISEMETER             122
-#define FX_MODE_FREQWAVE               123
-#define FX_MODE_FREQMATRIX             124
-#define FX_MODE_SPECTRAL               125
-#define FX_MODE_WATERFALL              126
-#define FX_MODE_FREQPIXEL              127
-#define FX_MODE_BINMAP                 128
-#define FX_MODE_NOISEPEAK              129
-#define FX_MODE_NOISEFIRE              130
-#define FX_MODE_PUDDLEPEAK             131
-#define FX_MODE_NOISEMOVE              132
-#define FX_MODE_CYCLEEFFECTS               133
-#define FX_MODE_PERLINMOVE             134
-#define FX_MODE_RIPPLEPEAK             135
-#define FX_MODE_2DFIRENOISE            136
-#define FX_MODE_2DSQUAREDSWIRL         137
-#define FX_MODE_2DFIRE2012             138
-#define FX_MODE_2DDNA                  139
-#define FX_MODE_2DMATRIX               140
-#define FX_MODE_2DMEATBALLS            141
-#define FX_FFT_TEST                    142
-#define FX_MODE_VISUALIZER                   143
-
+#define FX_MODE_PERLINMOVE             114
+#define FX_MODE_2DFIRENOISE            115  //Firebase
+#define FX_MODE_2DSQUAREDSWIRL         116  //Squirrels
+#define FX_MODE_2DFIRE2012             117  //Fire High Flames
+#define FX_MODE_2DDNA                  118  //Time Traveller
+#define FX_MODE_2DMATRIX               119  //Matrix
+#define FX_MODE_2DMEATBALLS            120  //White Fusion
+#define FX_MODE_CYCLEEFFECTS           121  //cycle effects
+#define FX_MODE_NOISEPEAK              122  // cycle sound effects
+#define FX_MODE_PIXELS                 123  //Twitchy
+#define FX_MODE_PIXELWAVE              124  //Volume
+#define FX_MODE_JUGGLES                125
+#define FX_MODE_MATRIPIX               126
+#define FX_MODE_GRAVIMETER             127  //Stamps
+#define FX_MODE_PLASMOID               128
+#define FX_MODE_PUDDLES                129
+#define FX_MODE_MIDNOISE               130  //Bonfire
+#define FX_MODE_NOISEMETER             131
+#define FX_MODE_FREQWAVE               132
+#define FX_MODE_FREQMATRIX             133
+#define FX_MODE_RIPPLEPEAK             134  //Sound Train
+#define FX_MODE_WATERFALL              135  //Ocean Waves
+#define FX_MODE_FREQPIXEL              136
+#define FX_MODE_BINMAP                 137  //Slow Fall
+#define FX_MODE_NOISEFIRE              138
+#define FX_MODE_PUDDLEPEAK             139  //Three Bars
+#define FX_MODE_NOISEMOVE              140  //Sound Spots
+#define FX_MODE_VISUALIZER             141
+//#define FX_MODE_SPECTRAL               125
+//#define FX_FFT_TEST                    142
 
 // Sound reactive external variables
 extern int sample;
@@ -518,7 +517,7 @@ class WS2812FX {
       _mode[FX_MODE_NOISEMETER]              = &WS2812FX::mode_noisemeter;
       _mode[FX_MODE_FREQWAVE]                = &WS2812FX::mode_freqwave;
       _mode[FX_MODE_FREQMATRIX]              = &WS2812FX::mode_freqmatrix;
-      _mode[FX_MODE_SPECTRAL]                = &WS2812FX::mode_spectral;
+//      _mode[FX_MODE_SPECTRAL]                = &WS2812FX::mode_spectral;
       _mode[FX_MODE_WATERFALL]               = &WS2812FX::mode_waterfall;
       _mode[FX_MODE_FREQPIXEL]               = &WS2812FX::mode_freqpixel;
       _mode[FX_MODE_BINMAP]                  = &WS2812FX::mode_binmap;
@@ -535,7 +534,7 @@ class WS2812FX {
       _mode[FX_MODE_2DDNA]                   = &WS2812FX::mode_2Ddna;
       _mode[FX_MODE_2DMATRIX]                = &WS2812FX::mode_2Dmatrix;
       _mode[FX_MODE_2DMEATBALLS]             = &WS2812FX::mode_2Dmeatballs;
-      _mode[FX_FFT_TEST]                     = &WS2812FX::fft_test;
+//      _mode[FX_FFT_TEST]                     = &WS2812FX::fft_test;
       _mode[FX_MODE_VISUALIZER]              = &WS2812FX::mode_visualizer;
 
       _brightness = DEFAULT_BRIGHTNESS;
@@ -770,7 +769,7 @@ class WS2812FX {
       mode_noisemeter(void),
       mode_freqwave(void),
       mode_freqmatrix(void),
-      mode_spectral(void),
+//      mode_spectral(void),
       mode_waterfall(void),
       mode_freqpixel(void),
       mode_binmap(void),
@@ -787,7 +786,7 @@ class WS2812FX {
       mode_2Ddna(void),
       mode_2Dmatrix(void),
       mode_2Dmeatballs(void),
-      fft_test(void),
+//      fft_test(void),
       mode_visualizer(void);
 
   private:
@@ -880,10 +879,10 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Twinklefox","Twinklecat","Halloween Eyes","Solid Pattern","Solid Pattern Tri","Spots","Spots Fade","Glitter","Candle","Fireworks Starburst",
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
 "Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Phased","Phased Noise","TwinkleUp","Noise Pal","Sine",
-"Flow","Chunchun","Dancing Shadows","Washing Machine","* Pixels","* Pixelwave","* Juggles","* Matripix","* Gravimeter","* Plasmoid",
-"* Puddles","* Midnoise","* Noisemeter","** Freqwave","** Freqmatrix","** Spectral","* Waterfall","** Freqpixel","** Binmap","** Noisepeak",
-"* Noisefire","* Puddlepeak","** Noisemove","* Cycle Effects","Perlin Move","* Ripple Peak","Firebase","Squirrels","Fire High Flames","Time Traveller",
-"Matrix","White Fusion","** FFT_TEST","** Visualizer"
+"Flow","Chunchun","Dancing Shadows","Washing Machine","Perlin Move","Firebase","Squirrels","Fire High Flames","Time Traveller","Matrix",
+"White Fusion","*Cycle Effects","*Cycle Music Effects","*Twitchy","*Volume","*Juggles","*MatriX","*Stamps","*Plasmoid","*Puddles","*Musical Bonfire",
+"*Noise Meter","*Sound2Color Drain","*Sound2Color","*Sound Train","*Ocean Waves","*Sound2Color Pixels","*Slow Fall","*Sound Fire","*Three Bars","*Sound Spots",
+"*Digital Visualizer"
 ])=====";
 
 

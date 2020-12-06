@@ -88,19 +88,32 @@ void WS2812FX::service() {
         if (!SEGMENT.getOption(SEG_OPTION_FREEZE)) { //only run effect function if not frozen
           _virtualSegmentLength = SEGMENT.virtualLength();
           handle_palette();
-          if (SEGMENT.mode != 133)
+          if (SEGMENT.mode != FX_MODE_CYCLEEFFECTS  && SEGMENT.mode != FX_MODE_NOISEPEAK)
           delay = (this->*_mode[SEGMENT.mode])(); //effect function
           else
           {
+            if(SEGMENT.mode == FX_MODE_CYCLEEFFECTS){
             if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
             {
+              _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % FX_MODE_CYCLEEFFECTS;
+              
+              _lastEffectChange[curSegment] = millis();
+            }
+            if(_cycleEffect[curSegment]==FX_MODE_CYCLEEFFECTS)
+            ++_cycleEffect[curSegment];
+            delay = (this->*_mode[_cycleEffect[curSegment]])();
+            }
+            else{
+                          if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
+            {
+              while(_cycleEffect[curSegment]<FX_MODE_NOISEPEAK) ++_cycleEffect[curSegment];
               _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % MODE_COUNT;
               
               _lastEffectChange[curSegment] = millis();
             }
-            if(_cycleEffect[curSegment]==133)
-            ++_cycleEffect[curSegment];
             delay = (this->*_mode[_cycleEffect[curSegment]])();
+            }
+            
           }
           if (SEGMENT.mode != FX_MODE_HALLOWEEN_EYES) SEGENV.call++;
         }
@@ -860,8 +873,11 @@ void WS2812FX::handle_palette(void)
       case FX_MODE_GLITTER    : paletteIndex = 11; break; //rainbow colors
       case FX_MODE_SUNRISE    : paletteIndex = 35; break; //heat palette
       case FX_MODE_FLOW       : paletteIndex =  6; break; //party
-      case FX_MODE_VISUALIZER       : paletteIndex =  69; break; //party
-      case FX_MODE_PLASMOID       : paletteIndex =  35; break; //party
+      case FX_MODE_VISUALIZER : paletteIndex =  69; break; //party
+      case FX_MODE_PLASMOID   : paletteIndex =  35; break; //party
+      case FX_MODE_RIPPLEPEAK : paletteIndex =  1; break; //party
+      case FX_MODE_BINMAP     : paletteIndex =  44; break; //orange&teal
+      case FX_MODE_GRAVIMETER : paletteIndex =  22; break; //orange&teal
     }
   }
   if (SEGMENT.mode >= FX_MODE_METEOR && paletteIndex == 0) paletteIndex = 4;

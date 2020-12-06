@@ -148,7 +148,7 @@ int getSampleFr()
   }
     else
     soundFr=0;
-    Serial.println(sAmplenumFr);
+  //Serial.println(sAmplenumFr);
   //Serial.println(n);
   sAmplenumFr = 0;
     sound15msBass = ((3 * fftResultBass[0]) + (3 * fftResultBass[1]) + (2 * fftResultBass[2]) + (2 * fftResultBass[3]) + fftResultBass[4]) / 11;
