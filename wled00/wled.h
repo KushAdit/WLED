@@ -453,7 +453,7 @@ WLED_GLOBAL bool blynkEnabled _INIT(false);
 // preset cycling
 WLED_GLOBAL bool presetCyclingEnabled _INIT(false);
 WLED_GLOBAL byte presetCycleMin _INIT(1), presetCycleMax _INIT(5);
-WLED_GLOBAL uint16_t presetCycleTime _INIT(12);
+WLED_GLOBAL uint16_t presetCycleTime _INIT(50);
 WLED_GLOBAL unsigned long presetCycledTime _INIT(0);
 WLED_GLOBAL byte presetCycCurr _INIT(presetCycleMin);
 WLED_GLOBAL bool saveCurrPresetCycConf _INIT(false);

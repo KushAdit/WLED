@@ -26,7 +26,7 @@
 
 #include "FX.h"
 #include "palettes.h"
-
+#include "wled.h"
 //enable custom per-LED mapping. This can allow for better effects on matrices or special displays
 //#define WLED_CUSTOM_LED_MAPPING
 
@@ -93,7 +93,7 @@ void WS2812FX::service() {
           else
           {
             if(SEGMENT.mode == FX_MODE_CYCLEEFFECTS){
-            if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
+            if (millis() - _lastEffectChange[curSegment] > 1000 + presetCycleTime * 100)
             {
               _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % FX_MODE_CYCLEEFFECTS;
               
@@ -104,7 +104,7 @@ void WS2812FX::service() {
             delay = (this->*_mode[_cycleEffect[curSegment]])();
             }
             else{
-                          if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
+                          if (millis() - _lastEffectChange[curSegment] > 1000 + presetCycleTime * 100)
             {
               while(_cycleEffect[curSegment]<FX_MODE_NOISEPEAK) ++_cycleEffect[curSegment];
               _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % MODE_COUNT;

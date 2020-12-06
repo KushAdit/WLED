@@ -229,7 +229,7 @@ button {
 
 .bot button {
 	padding: var(--bbp);
-	width:25%;
+	width:33%;
 }
 
 .tab button:hover {
@@ -299,45 +299,7 @@ button {
 	transition: 0.7s;
 	pointer-events: none;
 }
-/* Keep sliders on top when scrolling
-Effect Speed */
-.staytop {
-	display: block;
-	position: -webkit-sticky;
-	position: sticky;
-	background: var(--c-1);
-	top: 0px;
-	z-index: 1;
-	margin-top: 1px;
-	width: 274px;
-	margin: auto;
-	border-radius: 25px;
-}
-/* Effect Intensity */
-#staytop1 {
-	top: 30px;
-}
-/* FFT Low */
-#staytop2 {
-	top: 60px;
-}
-/* FFT High */
-#staytop3 {
-	top: 90px;
-}
-/* FFT Custom */
-#staytop4 {
-	top: 120px;
-}
-/* Solid Effect Mode */
-#staytop5 {
-	top: 150px;
-}
 
-#fxb0 {
-	margin-bottom: 2px;
-  filter: drop-shadow(0 0 1px #000);
-}
 
 .first {
 	margin-top: 18px !important;
@@ -956,12 +918,20 @@ input[type=number]::-webkit-outer-spin-button {
 </div>
 
 <div class ="container">
-  <div id="Colors" class="tabcontent">
+  <div id="Animate" class="tabcontent">
 	<p class="hd">Color Palette</p>
     <div class="il">
       <i class="icons sel-icon" onclick="tglHex()">&#xe2b3;</i>
       <select class="btn sel" id="selectPalette" onchange="setPalette()">
-        <option>Wheel</option>
+        <option>Color Wheel</option>
+        <option>Error!</option>
+      </select>
+	</div>
+	<p class="hd">Effect Mode</p>
+    <div class="il">
+      <i class="icons sel-icon" onclick="tglHex()">&#xe34b;</i>
+      <select class="btn sel" id="selectEffect" onchange="setEffect()">
+        <option>Solid</option>
         <option>Error!</option>
       </select>
 	</div>
@@ -1020,44 +990,9 @@ input[type=number]::-webkit-outer-spin-button {
 		<input id="hexc" type="text" class="noslide" onkeydown="hexEnter(this)" autocomplete="off" maxlength="8" />
 		<button id="hexcnf" class="xxs btn" onclick="fromHex();"><i class="icons btna-icon">&#xe390;</i></button>
 	</div>
-  </div>
-
-  <div id="Effects" class="tabcontent">
-    <p class="labels">FFT Low</p>
-    <div class="staytop" id="staytop2">
-      <i class="icons slider-icon">&#xe409;</i>
-      <div class="sliderwrap il">
-				<input id="sliderFFT1" class="noslide" onchange="setFFT1()" oninput="updateTrail(this)" max="255" min="0" type="range" value="6" />
-				<output class="sliderbubble hidden"></output>
-        <div class="sliderdisplay"></div>
-      </div>
-    </div>
-    <p class="labels">FFT High</p>
-    <div class="staytop" id="staytop3">
-      <i class="icons slider-icon">&#xe409;</i>
-      <div class="sliderwrap il">
-				<input id="sliderFFT2" class="noslide" onchange="setFFT2()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
-				<output class="sliderbubble hidden"></output>
-        <div class="sliderdisplay"></div>
-      </div>
-    </div>
-    <p class="labels">FFT Custom</p>
-    <div class="staytop" id="staytop4">
-      <i class="icons slider-icon">&#xe409;</i>
-      <div class="sliderwrap il">
-				<input id="sliderFFT3" class="noslide" onchange="setFFT3()" oninput="updateTrail(this)" max="255" min="0" type="range" value="252" />
-				<output class="sliderbubble hidden"></output>
-        <div class="sliderdisplay"></div>
-      </div>
-    </div>
-    <p class="labels">Effect mode</p>
-    <div class="staytop" id="staytop5">
-      <button class="btn" id="fxb0" onclick="setX(0);">Solid</button>
-    </div>
-    <div id="fxlist">
-      Loading...
-    </div>
-    <br>
+	<div>
+		<button class="btn" id="fxb0" hidden></button>
+	  </div>
   </div>
 
   <div id="Segments" class="tabcontent">
@@ -1081,39 +1016,34 @@ input[type=number]::-webkit-outer-spin-button {
 		</div>
 		<div id="pcont">
 			Loading...
-		</div><br>
+		</div><br><hr>
+		<h2> Cycle Presets </h2>
 		 <label class="check psvl">
-			Preset cycle
+			Turn On
 			<input type="checkbox" id="cyToggle" onchange="toggleCY()">
 			<span class="checkmark psv"></span>
 		</label><br>
 		First preset: <input id="cycs" class="noslide" type="number" min="1" max="249" value="1"><br>
 		Last preset: <input id="cyce" class="noslide" type="number" min="2" max="250" value="3"><br>
-		Time per preset: <input id="cyct" class="noslide" type="number" min="0.2" max="6553.5" step="0.1" value="1.2">s<br>
-		Transition: <input id="cyctt" class="noslide" type="number" min="0" max="65.5" step="0.1" value="0.7">s
+		Time per preset: <input id="cyct" class="noslide" type="number" min="0.2" max="6553.5" step="0.1" value="5">s<br>
+		Transition time: <input id="cyctt" class="noslide" type="number" min="0" max="65.5" step="0.1" value="0.7">s
 	</div>
 </div>
 
 <div class="tab bot" id="bot">
-	<button class="tablinks" onclick="openTab(0)"><i class="icons">&#xe2b3;</i><p class="tab-label">Colors</p></button>
-	<button class="tablinks" onclick="openTab(1)"><i class="icons">&#xe23d;</i><p class="tab-label">Effects</p></button>
-	<button class="tablinks" onclick="openTab(2)"><i class="icons">&#xe34b;</i><p class="tab-label">Segments</p></button>
-	<button class="tablinks" onclick="openTab(3)"><i class="icons">&#xe04c;</i><p class="tab-label">Favorites</p></button>
+	<button class="tablinks" onclick="openTab(0)"><i class="icons">&#xe2b3;</i><p class="tab-label">Animate</p></button>
+	<button class="tablinks" onclick="openTab(1)"><i class="icons">&#xe34b;</i><p class="tab-label">Segments</p></button>
+	<button class="tablinks" onclick="openTab(2)"><i class="icons">&#xe04c;</i><p class="tab-label">Favorites</p></button>
 </div>
 
 <div id="connind"></div>
 <div id="toast"></div>
 <div id="namelabel"></div>
 <div id="info" class="modal">
-	<div id="imgw">
-		<img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggAAACMCAYAAAAZQlGEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKLSURBVHhe7dgxjtwwEADBpf//5zUDwklnpzFAnKoSTigNFTT0AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGDcOieX+G5nvNLaznil6f1Nv+/tz3c7+3tmen/Tpu/jbe877c85AQD+EQgAQAgEACAEAgAQAgEACIEAAIRAAABCIAAAIRAAgBAIAEAIBAAgBAIAEAIBAAiBAACEQAAAQiAAACEQAIAQCABACAQAINY5+aHvdsYRazvjK9jfM7fvz/0+Y3+/2+336w8CABACAQAIgQAAhEAAAEIgAAAhEACAEAgAQAgEACAEAgAQAgEACIEAAIRAAABCIAAAIRAAgBAIAEAIBAAgBAIAEAIBAAiBAADEOudrfLczXmltZ3yF6fuwv2em9+d+n5ne3zT3cZfp+/AHAQAIgQAAhEAAAEIgAAAhEACAEAgAQAgEACAEAgAQAgEACIEAAIRAAABCIAAAIRAAgBAIAEAIBAAgBAIAEAIBAAiBAACEQAAAYp3zNb7bGUes7Yz8wO334fmeuf35bmd/z9y+v9ufzx8EACAEAgAQAgEACIEAAIRAAABCIAAAIRAAgBAIAEAIBAAgBAIAEAIBAAiBAACEQAAAQiAAACEQAIAQCABACAQAIAQCABACAQCIdc4x3+2MV1rbGfmFpr+/6e/l9ue73fT+pt1+H2/bn+/lGX8QAIAQCABACAQAIAQCABACAQAIgQAAhEAAAEIgAAAhEACAEAgAQAgEACAEAgAQAgEACIEAAIRAAABCIAAAIRAAgBAIAEAIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgP/u8/kLYCqAxINTyZkAAAAASUVORK5CYII=">
-	</div><br>
+<br>
 <div id="kv">Loading...</div><br>
 <button class="btn infobtn" onclick="requestJson(null)">Refresh</button>
 <button class="btn infobtn" onclick="toggleInfo()">Close Info</button><br>
-<button class="btn infobtn" onclick="openGH()">WLED Wiki</button>
-<button class="btn infobtn" id="resetbtn" onclick="cnfReset()">Reboot WLED</button><br>
-<span class="h">Made with <span id="heart">&#10084;&#xFE0E;</span> by Aircoookie and the WLED community</span>
 </div>
 
 <div id="rover" class="modal">
@@ -1262,7 +1192,7 @@ function cTheme(light) {
 	sCol('--c-tb','rgba(204, 204, 204, var(--t-b))');
 	sCol('--c-tba','rgba(170, 170, 170, var(--t-b))');
 	sCol('--c-tbh','rgba(204, 204, 204, var(--t-b))');
-	d.getElementById('imgw').style.filter = "invert(0.8)";
+//	d.getElementById('imgw').style.filter = "invert(0.8)";
 	} else {
 	sCol('--c-1','#111');
 	sCol('--c-f','#fff');
@@ -1282,7 +1212,7 @@ function cTheme(light) {
 	sCol('--c-tb','rgba(34, 34, 34, var(--t-b))');
 	sCol('--c-tba','rgba(102, 102, 102, var(--t-b))');
 	sCol('--c-tbh','rgba(51, 51, 51, var(--t-b))');
-	d.getElementById('imgw').style.filter = "unset";
+//	d.getElementById('imgw').style.filter = "unset";
 	}
 }
 
@@ -1292,7 +1222,7 @@ function loadBg(iUrl) {
 	img.src = iUrl;
 	img.addEventListener('load', (event) => {
 		var a = parseFloat(cfg.theme.alpha.bg);
-		d.getElementById('staytop2').style.background = "transparent";
+//		d.getElementById('staytop2').style.background = "transparent";
 		if (isNaN(a)) a = 0.6;
 		bg.style.opacity = a;
 		bg.style.backgroundImage = `url(${iUrl})`;
@@ -1605,16 +1535,14 @@ function populateInfo(i)
 	if (i.ver.startsWith("0.11.")) vcn = "Mirai";
 	if (i.cn) vcn = i.cn;
 
-	cn += `v${i.ver} "${vcn}"<br><br><table class="infot">
+	cn += `<br><br><table class="infot">
 	${urows}
-	${inforow("Build",i.vid)}
 	${inforow("Signal strength",i.wifi.signal +"% ("+ i.wifi.rssi, " dBm)")}
 	${inforow("Uptime",getRuntimeStr(i.uptime))}
-	${inforow("Free heap",heap," kB")}
+	${inforow("Free RAM",heap," kB")}
 	${inforow("Estimated current",pwru)}
 	${inforow("MAC address",i.mac)}
 	${inforow("Filesystem",i.fs.u + "/" + i.fs.t + " kB (" +Math.round(i.fs.u*100/i.fs.t) + "%)")}
-	${inforow("Environment",i.arch + " " + i.core + " (" + i.lwip + ")")}
 	</table>`;
 	d.getElementById('kv').innerHTML = cn;
 }
@@ -1797,6 +1725,8 @@ function updateUI()
 
 	spal = d.getElementById("selectPalette");
 	spal.style.backgroundColor = (spal.selectedIndex > 0) ? "var(--c-6)":"var(--c-3)";
+	seff = d.getElementById("selectEffect");
+	seff.style.backgroundColor = (seff.selectedIndex > 0) ? "var(--c-6)":"var(--c-3)";
 	updatePA();
 	updateHex();
 	updateRgb();
@@ -1826,7 +1756,7 @@ function requestJson(command, rinfo = true, verbose = true) {
 	lastUpdate = new Date();
 	if (!jsonTimeout) jsonTimeout = setTimeout(showErrorToast, 3000);
 	var req = null;
-	e1 = d.getElementById('fxlist');
+	e1 = d.getElementById('selectEffect');
 	e2 = d.getElementById('selectPalette');
 
 	url = rinfo ? '/json/si': (command ? '/json/state':'/json');
@@ -1872,12 +1802,12 @@ function requestJson(command, rinfo = true, verbose = true) {
     }
     else populatePresets(true);
     pmtLast = pmt;
-		var x='',y='<option value="0">Default</option>';
+	var x='<option value="0">Solid</option>',y='<option value="0">Color Wheel</option>';
 		json.effects.shift(); //remove solid
-		for (i in json.effects) json.effects[i] = {id: parseInt(i)+1, name:json.effects[i]};
+		for (i in json.effects) json.effects[i] = {"id": parseInt(i)+1, "name":json.effects[i]};
 		json.effects.sort(compare);
 		for (i in json.effects) {
-		x += `<button class="btn${(i==0)?" first":""}" id="fxb${json.effects[i].id}" onclick="setX(${json.effects[i].id});">${json.effects[i].name}</button><br>`;
+		x += `<option value="${json.effects[i].id}">${json.effects[i].name}</option>`;
 		}
 
 		json.palettes.shift(); //remove default
@@ -1946,14 +1876,14 @@ function requestJson(command, rinfo = true, verbose = true) {
 
 		d.getElementById('sliderSpeed').value = i.sx;
 		d.getElementById('sliderIntensity').value = i.ix;
-		d.getElementById('sliderFFT1').value = i.f1x;
-		d.getElementById('sliderFFT2').value = i.f2x;
-		d.getElementById('sliderFFT3').value = i.f3x;
+//		d.getElementById('sliderFFT1').value = i.f1x;
+//		d.getElementById('sliderFFT2').value = i.f2x;
+//		d.getElementById('sliderFFT3').value = i.f3x;
 
 		d.getElementById('fxb' + selectedFx).style.backgroundColor = "var(--c-3)";
-		selectedFx = i.fx;
+		e1.value = i.fx;
 		e2.value = i.pal;
-		if (!command) d.getElementById('Effects').scrollTop = d.getElementById('fxb' + selectedFx).offsetTop - d.getElementById('Effects').clientHeight/1.8;
+		//if (!command) d.getElementById('Effects').scrollTop = d.getElementById('fxb' + selectedFx).offsetTop - d.getElementById('Effects').clientHeight/1.8;
 
 		if (s.error && s.error != 0) {
       var errstr = "";
@@ -2176,17 +2106,16 @@ function setSegBri(s){
 	requestJson(obj);
 }
 
-function setX(ind) {
-	var obj = {"seg": {"fx": parseInt(ind)}};
-	requestJson(obj);
-}
-
 function setPalette()
 {
 	var obj = {"seg": {"pal": parseInt(d.getElementById('selectPalette').value)}};
 	requestJson(obj);
 }
-
+function setEffect()
+{
+	var obj = {"seg": {"fx": parseInt(d.getElementById('selectEffect').value)}};
+	requestJson(obj);
+}
 function setBri() {
 	var obj = {"bri": parseInt(d.getElementById('sliderBri').value)};
 	obj.transition = parseInt(d.getElementById('cyctt').value*10);
@@ -2207,7 +2136,7 @@ function setLor(i) {
 	var obj = {"lor": i};
 	requestJson(obj);
 }
-
+/*
 function setFFT1() {
   var obj = {"seg": {"f1x": parseInt(d.getElementById('sliderFFT1').value)}};
   requestJson(obj);
@@ -2222,7 +2151,7 @@ function setFFT3() {
   var obj = {"seg": {"f3x": parseInt(d.getElementById('sliderFFT3').value)}};
   requestJson(obj);
 }
-
+*/
 function toggleCY() {
 	var obj = {"pl" : -1};
 	if (d.getElementById('cyToggle').checked)
@@ -2462,9 +2391,9 @@ function unfocusSliders() {
 	d.getElementById("sliderBri").blur();
 	d.getElementById("sliderSpeed").blur();
 	d.getElementById("sliderIntensity").blur();
-	d.getElementById("sliderFFT1").blur();
-	d.getElementById("sliderFFT2").blur();
-	d.getElementById("sliderFFT3").blur();
+//	d.getElementById("sliderFFT1").blur();
+//	d.getElementById("sliderFFT2").blur();
+//	d.getElementById("sliderFFT3").blur();
 
 }
 
