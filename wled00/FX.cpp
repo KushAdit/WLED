@@ -3920,7 +3920,7 @@ uint16_t WS2812FX::mode_plasmoid(void) {                                  // Pla
     colorIndex=thisbright;
 
     if (sound * 8 * SEGMENT.intensity/256 > thisbright) {thisbright = 255;} else {thisbright = 0;}
-    setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(colorIndex, false, PALETTE_SOLID_WRAP, 0), thisbright));
+    setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(colorIndex, false, PALETTE_SOLID_WRAP, 255), thisbright));
   }
 
   return FRAMETIME;
@@ -3946,7 +3946,7 @@ uint16_t WS2812FX::mode_puddles(void) {                                   // Pud
   }
 
   for(int i=0; i<size; i++) {                                             // Flash the LED's.
-    setPixelColor(pos+i, color_blend(SEGCOLOR(1), color_from_palette(millis(), false, PALETTE_SOLID_WRAP, 0), 255));
+    setPixelColor(pos+i, color_from_palette(millis(), true, PALETTE_SOLID_WRAP, 255));
   }
 
   return FRAMETIME;
@@ -3957,7 +3957,7 @@ uint16_t WS2812FX::mode_puddles(void) {                                   // Pud
 //   * MIDNOISE     //
 //////////////////////
 
-uint16_t WS2812FX::mode_midnoise(void) {                                  // Midnoise. By Andrew Tuline.
+uint16_t WS2812FX::mode_midnoise(void) {                     //deleteit             // Midnoise. By Andrew Tuline.
 
   static uint16_t xdist;
   static uint16_t ydist;
@@ -4048,7 +4048,7 @@ int sound = getSound(SEGMENT.bass, gotSound);
 ///////////////////////
 
 // Andrew's crappy peak detector. If I were 40+ years younger, I'd learn signal processing.
-uint16_t WS2812FX::mode_puddlepeak(void) {                                // Puddlepeak. By Andrew Tuline.
+uint16_t WS2812FX::mode_puddlepeak(void) {                   //deleteit             // Puddlepeak. By Andrew Tuline.
 
   uint16_t size = 0;
   uint8_t fadeVal = map(SEGMENT.speed,0,255, 224, 255);
@@ -4075,7 +4075,7 @@ uint16_t WS2812FX::mode_puddlepeak(void) {                                // Pud
 //     * Ripple Peak           //
 /////////////////////////////////
 
-uint16_t WS2812FX::mode_ripplepeak(void) {                    // * Ripple peak. By Andrew Tuline.
+uint16_t WS2812FX::mode_ripplepeak(void) {               //deleteit     // * Ripple peak. By Andrew Tuline.
 
   #ifdef ESP32
   extern double FFT_MajorPeak;
@@ -4165,26 +4165,10 @@ uint16_t WS2812FX::mode_waterfall(void) {                  // Waterfall. By: And
 
   if ((curMillis - prevMillis) >= ((256-SEGMENT.speed) >>2)) {
     prevMillis = curMillis;
-
-#ifdef ESP32
+  int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
+  gotSoundFr = true;
     uint8_t pixCol = (log10((int)FFT_MajorPeak) - 2.26) * 177;       // log10 frequency range is from 2.26 to 3.7. Let's scale accordingly.
-#else
-    uint8_t pixCol = sample * SEGMENT.intensity / 128;
-#endif // ESP8266
-
-    if (samplePeak) {
-      samplePeak = 0;
-      setPixelColor(SEGLEN-1,92,92,92);
-    } else {
-
-#ifdef ESP32
-  setPixelColor(SEGLEN-1, color_blend(SEGCOLOR(1), color_from_palette(pixCol+SEGMENT.intensity, false, PALETTE_SOLID_WRAP, 0), (int)FFT_Magnitude>>8));
-
-#else
-  setPixelColor(SEGLEN-1, color_blend(SEGCOLOR(1), color_from_palette(millis(), false, PALETTE_SOLID_WRAP, 0), pixCol));
-#endif // ESP8266
-    }
-
+  setPixelColor(SEGLEN-1, color_blend(SEGCOLOR(1), color_from_palette(pixCol+SEGMENT.intensity, false, PALETTE_SOLID_WRAP, 0), (int)sound*4));
     for (int i=0; i<SEGLEN-1; i++) setPixelColor(i,getPixelColor(i+1));
   }
 
@@ -4200,7 +4184,7 @@ uint16_t WS2812FX::mode_waterfall(void) {                  // Waterfall. By: And
 // Map the first 256 bins to the entire segment. The remaining 256 bins are kind of a mirror image to the first 256.
 // Not a great sketch and we don't need to be accurate, but it looks cool (at least to me it does).
 
-uint16_t WS2812FX::mode_binmap(void) {        // Binmap. Scale bins to SEGLEN. By Andrew Tuline.
+uint16_t WS2812FX::mode_binmap(void) {       //deleteit // Binmap. Scale bins to SEGLEN. By Andrew Tuline.
 
 #ifdef ESP32
 
@@ -4368,13 +4352,7 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
 
     // Serial.println(color);
     leds[locn] =  (c.h << 16) + (c.s << 8)  + (c.v );
-
-
-    // DISPLAY ARRAY
-
-      c.h = (leds[locn] >> 16) & 0xFF;
-      c.s = (leds[locn] >> 8) &0xFF;
-      c.v = leds[locn] & 0xFF;  
+ 
       CRGB color = c;                                                        // implicit conversion to RGB supplied by FastLED
       setPixelColor(locn, color.red, color.green, color.blue);
     
@@ -4500,7 +4478,7 @@ uint16_t WS2812FX::mode_noisemove(void) {     // Noisemove    By: Andrew Tuline
 //  ** NOISEPEAK    //
 //////////////////////
 
-uint16_t WS2812FX::mode_noisepeak(void) {     // Noisepeak  Frequency noise beat (err. . . OK peak) to blast out palette based perlin noise across SEGLEN. By Andrew Tuline.
+uint16_t WS2812FX::mode_noisepeak(void) {     //deleteit // Noisepeak  Frequency noise beat (err. . . OK peak) to blast out palette based perlin noise across SEGLEN. By Andrew Tuline.
 
 #ifdef ESP32
 
@@ -4546,7 +4524,7 @@ uint16_t WS2812FX::mode_noisepeak(void) {     // Noisepeak  Frequency noise beat
 // The 2 slider that is active in this effect is the general brightness slider, everything else is being computed on the fly.
 // FFT3 sets the cutoff value below which we think its noise
 //
-uint16_t WS2812FX::mode_spectral(void) {      // Spectral. By Andreas Pleschutznig.
+uint16_t WS2812FX::mode_spectral(void) {      //deleteit // Spectral. By Andreas Pleschutznig.
 
 #ifdef ESP32
   double maxVal = 0;
