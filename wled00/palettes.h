@@ -13,7 +13,7 @@
 #ifndef PalettesWLED_h
 #define PalettesWLED_h
 
-#define GRADIENT_PALETTE_COUNT 55
+#define GRADIENT_PALETTE_COUNT 57
 
 const byte ib_jul01_gp[] PROGMEM = {
     0, 194,  1,  1,
@@ -809,7 +809,11 @@ const byte Candy2[] PROGMEM = {
   211,  39, 33, 34,
   255,   1,  1,  1};
 
-
+const byte Green2Red[] PROGMEM = {
+  0,   20, 255, 0,
+  85,  240,140,0,
+  169, 255,  0,  0,
+  255,  255,  0,  211};
 
 
 
@@ -859,21 +863,22 @@ const byte* const gGradientPalettes[] PROGMEM = {
   Atlantica_gp,                 //51-38 Atlantica
   C9_2_gp,                      //52-39 C9 2
   C9_new_gp,                    //53-40 C9 New
-  Retro_Clown,
-  Candy,
-  Toxy_Reaf,
-  Fairy_Reaf,
-  Semi_Blue,
-  Pink_Candy,
-  Red_Reaf,
-  Red_n_Flash,
-  YBlue,
-  Lite_Light,
-  Pink_Plasma,
-  Blink_Red,
-  Yellow2Blue,
-  Yellow2Red,
-  Candy2
+  Retro_Clown,                  //54-41
+  Candy,                        //55-42
+  Toxy_Reaf,                    //56-43
+  Fairy_Reaf,                   //57-44
+  Semi_Blue,                    //58-45
+  Pink_Candy,                   //59-46
+  Red_Reaf,                     //60-47
+  Red_n_Flash,                  //61-48
+  YBlue,                        //62-49
+  Lite_Light,                   //63-50
+  Pink_Plasma,                  //64-51
+  Blink_Red,                    //65-52
+  Yellow2Blue,                  //66-53
+  Yellow2Red,                   //67-54
+  Candy2,                       //68-55
+  Green2Red                     //69-56
 };
 
 #endif
