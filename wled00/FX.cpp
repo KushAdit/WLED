@@ -3949,7 +3949,7 @@ uint16_t WS2812FX::mode_gravimeter(void) {//stamps
   height = constrain(height, 0, s);
 
   for (int i=0; i<height; i++) {
-     setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(i, true, PALETTE_SOLID_WRAP, 0), 255));
+     setPixelColor(i, color_from_palette(i, true, true, 255));
  }
     if (height > 0) {
     setPixelColor(height-1, color_blend(SEGCOLOR(1), color_from_palette(now/64, false, true, 255), 255));

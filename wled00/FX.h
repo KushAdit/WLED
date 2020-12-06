@@ -880,9 +880,9 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
 "Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Phased","Phased Noise","TwinkleUp","Noise Pal","Sine",
 "Flow","Chunchun","Dancing Shadows","Washing Machine","Perlin Move","Firebase","Squirrels","Fire High Flames","Time Traveller","Matrix",
-"White Fusion","*Cycle Effects","*Cycle Music Efects","*Twitchy","*Volume","*Juggles","*MatriX","*Stamps","*Plasmoid","*Puddles","*Bonfire",
+"White Fusion","*Cycle Effects","*Cycle Music Effects","*Twitchy","*Volume","*Juggles","*MatriX","*Stamps","*Plasmoid","*Puddles","*Musical Bonfire",
 "*Noise Meter","*Sound2Color Drain","*Sound2Color","*Sound Train","*Ocean Waves","*Sound2Color Pixels","*Slow Fall","*Sound Fire","*Three Bars","*Sound Spots",
-"*Visualizer"
+"*Digital Visualizer"
 ])=====";
 
 

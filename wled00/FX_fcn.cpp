@@ -104,10 +104,9 @@ void WS2812FX::service() {
             delay = (this->*_mode[_cycleEffect[curSegment]])();
             }
             else{
-              while(_cycleEffect[curSegment]<FX_MODE_NOISEPEAK) ++_cycleEffect[curSegment];
-            if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
+                          if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
             {
-              
+              while(_cycleEffect[curSegment]<FX_MODE_NOISEPEAK) ++_cycleEffect[curSegment];
               _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % MODE_COUNT;
               
               _lastEffectChange[curSegment] = millis();
