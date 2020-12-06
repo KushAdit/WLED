@@ -143,7 +143,7 @@ extern  int maxLvlAvg[16];
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT                     144
+#define MODE_COUNT                     140
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -270,25 +270,25 @@ extern  int maxLvlAvg[16];
 #define FX_MODE_NOISEMETER             122
 #define FX_MODE_FREQWAVE               123
 #define FX_MODE_FREQMATRIX             124
-#define FX_MODE_SPECTRAL               125
-#define FX_MODE_WATERFALL              126
-#define FX_MODE_FREQPIXEL              127
-#define FX_MODE_BINMAP                 128
-#define FX_MODE_NOISEPEAK              129
-#define FX_MODE_NOISEFIRE              130
-#define FX_MODE_PUDDLEPEAK             131
-#define FX_MODE_NOISEMOVE              132
-#define FX_MODE_CYCLEEFFECTS               133
-#define FX_MODE_PERLINMOVE             134
-#define FX_MODE_RIPPLEPEAK             135
-#define FX_MODE_2DFIRENOISE            136
-#define FX_MODE_2DSQUAREDSWIRL         137
-#define FX_MODE_2DFIRE2012             138
-#define FX_MODE_2DDNA                  139
-#define FX_MODE_2DMATRIX               140
-#define FX_MODE_2DMEATBALLS            141
-#define FX_FFT_TEST                    142
-#define FX_MODE_VISUALIZER                   143
+//#define FX_MODE_SPECTRAL               125
+#define FX_MODE_WATERFALL              125
+#define FX_MODE_FREQPIXEL              126
+//#define FX_MODE_BINMAP                 128
+//#define FX_MODE_NOISEPEAK              129
+#define FX_MODE_NOISEFIRE              127
+#define FX_MODE_PUDDLEPEAK             128
+#define FX_MODE_NOISEMOVE              129
+#define FX_MODE_CYCLEEFFECTS           130
+#define FX_MODE_PERLINMOVE             131
+#define FX_MODE_RIPPLEPEAK             132
+#define FX_MODE_2DFIRENOISE            133
+#define FX_MODE_2DSQUAREDSWIRL         134
+#define FX_MODE_2DFIRE2012             135
+#define FX_MODE_2DDNA                  136
+#define FX_MODE_2DMATRIX               137
+#define FX_MODE_2DMEATBALLS            138
+//#define FX_FFT_TEST                    142
+#define FX_MODE_VISUALIZER             139
 
 
 // Sound reactive external variables
@@ -518,11 +518,11 @@ class WS2812FX {
       _mode[FX_MODE_NOISEMETER]              = &WS2812FX::mode_noisemeter;
       _mode[FX_MODE_FREQWAVE]                = &WS2812FX::mode_freqwave;
       _mode[FX_MODE_FREQMATRIX]              = &WS2812FX::mode_freqmatrix;
-      _mode[FX_MODE_SPECTRAL]                = &WS2812FX::mode_spectral;
+//      _mode[FX_MODE_SPECTRAL]                = &WS2812FX::mode_spectral;
       _mode[FX_MODE_WATERFALL]               = &WS2812FX::mode_waterfall;
       _mode[FX_MODE_FREQPIXEL]               = &WS2812FX::mode_freqpixel;
-      _mode[FX_MODE_BINMAP]                  = &WS2812FX::mode_binmap;
-      _mode[FX_MODE_NOISEPEAK]               = &WS2812FX::mode_noisepeak;
+//      _mode[FX_MODE_BINMAP]                  = &WS2812FX::mode_binmap;
+//      _mode[FX_MODE_NOISEPEAK]               = &WS2812FX::mode_noisepeak;
       _mode[FX_MODE_NOISEFIRE]               = &WS2812FX::mode_noisefire;
       _mode[FX_MODE_PUDDLEPEAK]              = &WS2812FX::mode_puddlepeak;
       _mode[FX_MODE_NOISEMOVE]               = &WS2812FX::mode_noisemove;
@@ -535,7 +535,7 @@ class WS2812FX {
       _mode[FX_MODE_2DDNA]                   = &WS2812FX::mode_2Ddna;
       _mode[FX_MODE_2DMATRIX]                = &WS2812FX::mode_2Dmatrix;
       _mode[FX_MODE_2DMEATBALLS]             = &WS2812FX::mode_2Dmeatballs;
-      _mode[FX_FFT_TEST]                     = &WS2812FX::fft_test;
+//      _mode[FX_FFT_TEST]                     = &WS2812FX::fft_test;
       _mode[FX_MODE_VISUALIZER]              = &WS2812FX::mode_visualizer;
 
       _brightness = DEFAULT_BRIGHTNESS;
@@ -770,11 +770,11 @@ class WS2812FX {
       mode_noisemeter(void),
       mode_freqwave(void),
       mode_freqmatrix(void),
-      mode_spectral(void),
+//      mode_spectral(void),
       mode_waterfall(void),
       mode_freqpixel(void),
-      mode_binmap(void),
-      mode_noisepeak(void),
+//      mode_binmap(void),
+//      mode_noisepeak(void),
       mode_noisefire(void),
       mode_puddlepeak(void),
       mode_noisemove(void),
@@ -787,7 +787,7 @@ class WS2812FX {
       mode_2Ddna(void),
       mode_2Dmatrix(void),
       mode_2Dmeatballs(void),
-      fft_test(void),
+//      fft_test(void),
       mode_visualizer(void);
 
   private:
@@ -880,10 +880,9 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Twinklefox","Twinklecat","Halloween Eyes","Solid Pattern","Solid Pattern Tri","Spots","Spots Fade","Glitter","Candle","Fireworks Starburst",
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
 "Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Phased","Phased Noise","TwinkleUp","Noise Pal","Sine",
-"Flow","Chunchun","Dancing Shadows","Washing Machine","* Pixels","* Pixelwave","* Juggles","* Matripix","* Gravimeter","* Plasmoid",
-"* Puddles","* Midnoise","* Noisemeter","** Freqwave","** Freqmatrix","** Spectral","* Waterfall","** Freqpixel","** Binmap","** Noisepeak",
-"* Noisefire","* Puddlepeak","** Noisemove","* Cycle Effects","Perlin Move","* Ripple Peak","Firebase","Squirrels","Fire High Flames","Time Traveller",
-"Matrix","White Fusion","** FFT_TEST","** Visualizer"
+"Flow","Chunchun","Dancing Shadows","Washing Machine","* Twitchy","* Volume","* Juggles","* Matripix","* Stamps","* Plasmoid",
+"* Puddles","* Bonfire","* Noisemeter","** Freqwave","** Freqmatrix","* Ocean Waves","** Freqpixel","* Noisefire","* Three Bars","** Noisemove",
+"* Cycle Effects","Perlin Move","* Sound Train","Firebase","Squirrels","Fire High Flames","Time Traveller","Matrix","White Fusion","** Visualizer"
 ])=====";
 
 

@@ -88,7 +88,7 @@ void WS2812FX::service() {
         if (!SEGMENT.getOption(SEG_OPTION_FREEZE)) { //only run effect function if not frozen
           _virtualSegmentLength = SEGMENT.virtualLength();
           handle_palette();
-          if (SEGMENT.mode != 133)
+          if (SEGMENT.mode != FX_MODE_CYCLEEFFECTS)
           delay = (this->*_mode[SEGMENT.mode])(); //effect function
           else
           {
@@ -98,7 +98,7 @@ void WS2812FX::service() {
               
               _lastEffectChange[curSegment] = millis();
             }
-            if(_cycleEffect[curSegment]==133)
+            if(_cycleEffect[curSegment]==FX_MODE_CYCLEEFFECTS)
             ++_cycleEffect[curSegment];
             delay = (this->*_mode[_cycleEffect[curSegment]])();
           }
@@ -860,8 +860,9 @@ void WS2812FX::handle_palette(void)
       case FX_MODE_GLITTER    : paletteIndex = 11; break; //rainbow colors
       case FX_MODE_SUNRISE    : paletteIndex = 35; break; //heat palette
       case FX_MODE_FLOW       : paletteIndex =  6; break; //party
-      case FX_MODE_VISUALIZER       : paletteIndex =  69; break; //party
-      case FX_MODE_PLASMOID       : paletteIndex =  35; break; //party
+      case FX_MODE_VISUALIZER : paletteIndex =  69; break; //party
+      case FX_MODE_PLASMOID   : paletteIndex =  35; break; //party
+      case FX_MODE_RIPPLEPEAK : paletteIndex =  1; break; //party
     }
   }
   if (SEGMENT.mode >= FX_MODE_METEOR && paletteIndex == 0) paletteIndex = 4;
