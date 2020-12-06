@@ -584,9 +584,6 @@ input[type=range]:active + .sliderbubble {
 	width: 216px;
 }
 
-#qcs-w {
-	margin-top: 10px;
-}
 .qcs {
 	padding: 14px;
 	margin: 2px;
@@ -933,20 +930,9 @@ input[type=number]::-webkit-outer-spin-button {
 		width: 16.6%;
 		padding: 8px 0 4px 0;
 	}
-	.hd {
-		display: none !important;
-	}
-	#briwrap {
-		margin-top: 0px !important;
-		float: none;
-	}
 }
 
-@media all and (max-width: 1249px) {
-	#buttonPcm {
-	display: none;
-	}
-}
+
 </style>
 </head>
 <body onload="onLoad()">
@@ -960,21 +946,10 @@ input[type=number]::-webkit-outer-spin-button {
 		<div class="btnwrap">
 			<button id="buttonPower" onclick="togglePower()" class="tgl"><i class="icons">&#xe08f;</i><p class="tab-label">Power</p></button>
 			<button id="buttonNl" onclick="toggleNl()"><i class="icons">&#xe2a2;</i><p class="tab-label">Timer</p></button>
-			<button id="buttonSync" onclick="toggleSync()"><i class="icons">&#xe116;</i><p class="tab-label">Sync</p></button>
-			<button id="buttonSr" onclick="toggleLiveview()"><i class="icons">&#xe410;</i><p class="tab-label">Peek</p></button>
+			<button id="buttonSync" onclick="tglLabels()"><i class="icons">&#xe116;</i><p class="tab-label">Hide</p></button>
 		<button id="buttonI" onclick="toggleInfo()"><i class="icons">&#xe34b;</i><p class="tab-label">Info</p></button>
-			<button onclick="window.location.href = '/settings';"><i class="icons">&#xe0a2;</i><p class="tab-label">Config</p></button>
-		<button id="buttonPcm" onclick="togglePcMode(true)"><i class="icons">&#xe23d;</i><p class="tab-label">PC Mode</p></button>
-		</div>
-		<div id="briwrap">
-			<p class="hd">Brightness</p>
-			<div class="il">
-				<i class="icons slider-icon" onclick="tglTheme()">&#xe2a6;</i>
-				<div class="sliderwrap il">
-					<input id="sliderBri" onchange="setBri()" oninput="updateTrail(this)" max="255" min="1" type="range" value="128" />
-					<div class="sliderdisplay"></div>
-				</div>
-			</div>
+		<button id="resetbtn" onclick="cnfReset()"><i class="icons">&#xe50;</i><p class="tab-label">Reboot</p></button>	
+		<button onclick="window.location.href = '/settings';"><i class="icons">&#xe0a2;</i><p class="tab-label">Config</p></button>
 		</div>
 		<iframe id="liveview" src="about:blank"></iframe>
 	</div>
@@ -982,6 +957,38 @@ input[type=number]::-webkit-outer-spin-button {
 
 <div class ="container">
   <div id="Colors" class="tabcontent">
+	<p class="hd">Color Palette</p>
+    <div class="il">
+      <i class="icons sel-icon" onclick="tglHex()">&#xe2b3;</i>
+      <select class="btn sel" id="selectPalette" onchange="setPalette()">
+        <option>Wheel</option>
+        <option>Error!</option>
+      </select>
+	</div>
+	<p class="hd">Brightness</p>
+	<div>
+		<i class="icons slider-icon" onclick="tglTheme()">&#xe2a6;</i>
+		<div class="sliderwrap il">
+			<input id="sliderBri" class="noslide" onchange="setBri()" oninput="updateTrail(this)" max="255" min="1" type="range" value="128" />
+			<div class="sliderdisplay"></div>
+		</div>
+	</div>
+<p class="hd">Effect speed</p>
+<div>
+  <i class="icons slider-icon">&#xe325;</i>
+  <div class="sliderwrap il">
+	<input id="sliderSpeed" class="noslide" onchange="setSpeed()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+	<div class="sliderdisplay"></div>
+  </div>
+</div>
+<p class="hd">Effect intensity</p>
+<div>
+  <i class="icons slider-icon" >&#xe409;</i>
+  <div class="sliderwrap il">
+	<input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
+	<div class="sliderdisplay"></div>
+  </div>
+</div>
 	<div id="picker" class="noslide"></div>
 	<div id="rgbwrap">
 		<div class="sliderwrap il">
@@ -1004,19 +1011,6 @@ input[type=number]::-webkit-outer-spin-button {
 			<div class="sliderdisplay"></div>
 		</div>
 	</div>
-	<div id="qcs-w">
-		<div class="qcs" onclick="pC('#ff0000');" style="background-color:#ff0000;"></div>
-		<div class="qcs" onclick="pC('#ffa000');" style="background-color:#ffa000;"></div>
-		<div class="qcs" onclick="pC('#ffc800');" style="background-color:#ffc800;"></div>
-		<div class="qcs" onclick="pC('#ffe0a0');" style="background-color:#ffe0a0;"></div>
-		<div class="qcs" onclick="pC('#ffffff');" style="background-color:#ffffff;"></div>
-		<div class="qcs qcsb" onclick="pC('#000000');" style="background-color:#000000;"></div><br>
-		<div class="qcs" onclick="pC('#ff00ff');" style="background-color:#ff00ff;"></div>
-		<div class="qcs" onclick="pC('#0000ff');" style="background-color:#0000ff;"></div>
-		<div class="qcs" onclick="pC('#00ffc8');" style="background-color:#00ffc8;"></div>
-		<div class="qcs" onclick="pC('#08ff00');" style="background-color:#08ff00;"></div>
-		<div class="qcs" onclick="pC('rnd');" style="background-color:var(--c-3); padding: 4px 8px; transform: translateY(-10px);">R</div>
-	</div>
 	<div id="csl">
 		<button class="xxs cl btn" onclick="selectSlot(0);">1</button>
 		<button class="xxs cl btn" onclick="selectSlot(1);">2</button>
@@ -1026,35 +1020,9 @@ input[type=number]::-webkit-outer-spin-button {
 		<input id="hexc" type="text" class="noslide" onkeydown="hexEnter(this)" autocomplete="off" maxlength="8" />
 		<button id="hexcnf" class="xxs btn" onclick="fromHex();"><i class="icons btna-icon">&#xe390;</i></button>
 	</div>
-    <p class="labels">Color palette</p>
-    <div class="il">
-      <i class="icons sel-icon" onclick="tglHex()">&#xe2b3;</i>
-      <select class="btn sel" id="selectPalette" onchange="setPalette()">
-        <option>Default</option>
-        <option>Error!</option>
-      </select>
-    </div>
   </div>
 
   <div id="Effects" class="tabcontent">
-    <p class="labels">Effect speed</p>
-    <div class="staytop">
-      <i class="icons slider-icon">&#xe325;</i>
-      <div class="sliderwrap il">
-				<input id="sliderSpeed" class="noslide" onchange="setSpeed()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
-				<output class="sliderbubble hidden"></output>
-        <div class="sliderdisplay"></div>
-      </div>
-    </div>
-    <p class="labels">Effect intensity</p>
-    <div class="staytop" id="staytop1">
-      <i class="icons slider-icon" onclick="tglLabels()">&#xe409;</i>
-      <div class="sliderwrap il">
-				<input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
-				<output class="sliderbubble hidden"></output>
-        <div class="sliderdisplay"></div>
-      </div>
-    </div>
     <p class="labels">FFT Low</p>
     <div class="staytop" id="staytop2">
       <i class="icons slider-icon">&#xe409;</i>
@@ -1241,7 +1209,6 @@ function applyCfg()
 	d.getElementById('hexw').style.display = ccfg.hex ? "block":"none";
 	d.getElementById('picker').style.display = ccfg.picker ? "block":"none";
 	d.getElementById('rgbwrap').style.display = ccfg.rgb ? "block":"none";
-	d.getElementById('qcs-w').style.display = ccfg.quick ? "block":"none";
 	var l = cfg.comp.labels;
 	var e = d.querySelectorAll('.tab-label');
 	for(var i=0; i<e.length; i++)
@@ -2558,7 +2525,6 @@ function togglePcMode(fromB = false)
 	if (w < 1250) {pcMode = false;}
 	else if (pcModeA && !fromB) pcMode = pcModeA;
 	updateTablinks(0);
-	d.getElementById('buttonPcm').className = (pcMode) ? "active":"";
 	d.getElementById('bot').style.height = (pcMode && !cfg.comp.pcmbot) ? "0":"auto";
 	sCol('--bh', d.getElementById('bot').clientHeight + "px");
   _C.style.width = (pcMode)?'100%':'400%';
