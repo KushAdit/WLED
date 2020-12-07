@@ -959,6 +959,13 @@ input[type=number]::-webkit-outer-spin-button {
 	<div class="sliderdisplay"></div>
   </div>
 </div>
+<div>
+<label class="check psvl">
+	MUSIC- BASSY BEATS
+	 <input type="checkbox" id="bassyBeats" onchange="setBassyB()">
+	 <span class="checkmark psv"></span>
+   </label>
+</div>
 	<div id="picker" class="noslide"></div>
 	<div id="rgbwrap">
 		<div class="sliderwrap il">
@@ -1876,6 +1883,7 @@ function requestJson(command, rinfo = true, verbose = true) {
 
 		d.getElementById('sliderSpeed').value = i.sx;
 		d.getElementById('sliderIntensity').value = i.ix;
+		d.getElementById('bassyBeats').checked = i.bas;
 //		d.getElementById('sliderFFT1').value = i.f1x;
 //		d.getElementById('sliderFFT2').value = i.f2x;
 //		d.getElementById('sliderFFT3').value = i.f3x;
@@ -2126,7 +2134,11 @@ function setSpeed() {
 	var obj = {"seg": {"sx": parseInt(d.getElementById('sliderSpeed').value)}};
 	requestJson(obj, false);
 }
-
+function setBassyB() {
+	var obj = {"seg": {"bas": d.getElementById('bassyBeats').checked}};
+	requestJson(obj, false);
+	
+}
 function setIntensity() {
 	var obj = {"seg": {"ix": parseInt(d.getElementById('sliderIntensity').value)}};
 	requestJson(obj, false);
