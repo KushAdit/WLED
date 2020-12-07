@@ -89,7 +89,7 @@ void WS2812FX::service() {
           _virtualSegmentLength = SEGMENT.virtualLength();
           
           if (SEGMENT.mode != FX_MODE_CYCLEEFFECTS  && SEGMENT.mode != FX_MODE_NOISEPEAK){
-          handle_palette(SEGMENT.palette);
+          handle_palette(SEGMENT.mode);
           delay = (this->*_mode[SEGMENT.mode])(); //effect function
           }
           else
@@ -857,15 +857,15 @@ void WS2812FX::load_gradient_palette(uint8_t index)
 /*
  * FastLED palette modes helper function. Limitation: Due to memory reasons, multiple active segments with FastLED will disable the Palette transitions
  */
-void WS2812FX::handle_palette(uint8_t palOpt)
+void WS2812FX::handle_palette(uint8_t modeOpt)
 {
   bool singleSegmentMode = (_segment_index == _segment_index_palette_last);
   _segment_index_palette_last = _segment_index;
 
-  byte paletteIndex = palOpt;
+  byte paletteIndex = SEGMENT.palette;
   if (paletteIndex == 0) //default palette. Differs depending on effect
   {
-    switch (SEGMENT.mode)
+    switch (modeOpt)
     {
       case FX_MODE_FIRE_2012  : paletteIndex = 35; break; //heat palette
       case FX_MODE_COLORWAVES : paletteIndex = 26; break; //landscape 33
