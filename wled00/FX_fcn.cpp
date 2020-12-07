@@ -87,30 +87,34 @@ void WS2812FX::service() {
 
         if (!SEGMENT.getOption(SEG_OPTION_FREEZE)) { //only run effect function if not frozen
           _virtualSegmentLength = SEGMENT.virtualLength();
-          handle_palette();
-          if (SEGMENT.mode != FX_MODE_CYCLEEFFECTS  && SEGMENT.mode != FX_MODE_NOISEPEAK)
+          
+          if (SEGMENT.mode != FX_MODE_CYCLEEFFECTS  && SEGMENT.mode != FX_MODE_NOISEPEAK){
+          handle_palette(SEGMENT.palette);
           delay = (this->*_mode[SEGMENT.mode])(); //effect function
+          }
           else
           {
             if(SEGMENT.mode == FX_MODE_CYCLEEFFECTS){
             if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
             {
-              _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % FX_MODE_CYCLEEFFECTS;
-              
+              ++_cycleEffect[curSegment];
               _lastEffectChange[curSegment] = millis();
+              if(_cycleEffect[curSegment]==FX_MODE_CYCLEEFFECTS)
+            _cycleEffect[curSegment]=0;
             }
-            if(_cycleEffect[curSegment]==FX_MODE_CYCLEEFFECTS)
-            ++_cycleEffect[curSegment];
+            handle_palette(_cycleEffect[curSegment]);
             delay = (this->*_mode[_cycleEffect[curSegment]])();
             }
             else{
                           if (millis() - _lastEffectChange[curSegment] > 1000 + ((uint32_t)(255 - SEGMENT.intensity)) * 100)
             {
-              while(_cycleEffect[curSegment]<FX_MODE_NOISEPEAK) ++_cycleEffect[curSegment];
-              _cycleEffect[curSegment] = ++_cycleEffect[curSegment] % MODE_COUNT;
-              
+              ++_cycleEffect[curSegment];
               _lastEffectChange[curSegment] = millis();
+              if(_cycleEffect[curSegment]<=FX_MODE_NOISEPEAK || _cycleEffect[curSegment]==MODE_COUNT)
+            _cycleEffect[curSegment] = FX_MODE_NOISEPEAK + 1 ;
+            // Serial.println(_cycleEffect[curSegment]);
             }
+            handle_palette(_cycleEffect[curSegment]);
             delay = (this->*_mode[_cycleEffect[curSegment]])();
             }
             
@@ -853,12 +857,12 @@ void WS2812FX::load_gradient_palette(uint8_t index)
 /*
  * FastLED palette modes helper function. Limitation: Due to memory reasons, multiple active segments with FastLED will disable the Palette transitions
  */
-void WS2812FX::handle_palette(void)
+void WS2812FX::handle_palette(uint8_t palOpt)
 {
   bool singleSegmentMode = (_segment_index == _segment_index_palette_last);
   _segment_index_palette_last = _segment_index;
 
-  byte paletteIndex = SEGMENT.palette;
+  byte paletteIndex = palOpt;
   if (paletteIndex == 0) //default palette. Differs depending on effect
   {
     switch (SEGMENT.mode)
