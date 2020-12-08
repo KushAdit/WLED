@@ -3779,9 +3779,9 @@ uint16_t WS2812FX::mode_pixels(void) {  //twitchy            // Pixels. By Andre
   bool bass = SEGMENT.bass;
   int y = SEGMENT.intensity;
   int s = SEGLEN;
-  int sound = getSound(bass, gotSound);
+  int sound = getSound(bass, gotSound)* y/128;
   gotSound = true;
-  fade_out(200);
+
   if (!bass)
   {
     dampSound15msAvg = sound;
@@ -3793,8 +3793,8 @@ uint16_t WS2812FX::mode_pixels(void) {  //twitchy            // Pixels. By Andre
   else
   {
     dampSound15msBass = sound;
-    height = dampSound15msBass * (y) / 64; // Too sensitive.
-    height = height * (y) / 64;            // Reduce sensitity/length.
+    height = dampSound15msBass * y *  y / 32; // Too sensitive.
+ //  height = height * (y) / 64;            // Reduce sensitity/length.
   }
   height = constrain(height, 0, s);
 
@@ -3813,9 +3813,10 @@ uint16_t WS2812FX::mode_pixels(void) {  //twitchy            // Pixels. By Andre
 //////////////////////
 
 uint16_t WS2812FX::mode_pixelwave(void) {              //volume                   // Pixelwave. By Andrew Tuline.
-    int sound = getSound(SEGMENT.bass, gotSound);
+    int sound = getSound(false, gotSound);
     gotSound = true;
-    int pixVal = sound * SEGMENT.intensity / 10;
+    static int pixVal=0, mPeak=1000;
+    pixVal = (pixVal*25 + sound * SEGMENT.intensity / 5)/26;
     if (pixVal > 255) pixVal = 255;
 
     CHSV c;
@@ -3825,6 +3826,7 @@ uint16_t WS2812FX::mode_pixelwave(void) {              //volume                 
       // With our sampling rate of 10240Hz we have a usable freq range from roughtly 80Hz to 10240/2 Hz
       // we will treat everything with less than 65Hz as 0
       //Serial.printf("%5d ", FFT_MajorPeak, 0);
+      mPeak= (mPeak * 25 + FFT_MajorPeak)/26;
       int i = getColorFromFr(FFT_MajorPeak);
       c = CHSV(i, 240, (uint8_t)pixVal);
  
@@ -3843,6 +3845,10 @@ uint16_t WS2812FX::mode_juggles(void)
 { // Juggles. By Andrew Tuline.
   int sound = getSound(SEGMENT.bass, gotSound);
   gotSound = true;
+  if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/16;
+else
+sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
   CHSV c;
   if (!SEGMENT.palette)
   {
@@ -3883,7 +3889,7 @@ uint16_t WS2812FX::mode_matripix(void)//Matrix
   if ((curMillis - prevMillis) >= ((256 - SEGMENT.speed) >> 2))
   {
     prevMillis = curMillis;
-    int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
+    int sound = getSoundFr(SEGMENT.bass, gotSoundFr)*SEGMENT.intensity/128;
     gotSoundFr = true;
     // check for orientation, slider in first quarter, default orientation
     for (int16_t i = 0; i <= SEGLEN - 1; i++)
@@ -3902,15 +3908,28 @@ uint16_t WS2812FX::mode_matripix(void)//Matrix
         leds[i].nscale8(192); // only fade trail
     }
 
-    height = SEGLEN * (sound - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]);
-    height = constrain(height, 0, SEGLEN);
+      if (!SEGMENT.bass)
+  {
+    dampSound15msAvg = ((dampSound15msAvg * 1) + sound) / 2;
+    height = SEGLEN * (dampSound15msAvg - minLvlAvg[x]) / (long)(maxLvlAvg[x] - minLvlAvg[x]);
+    volArrayVar[volArrayCount] = dampSound15msAvg; // Save sample for dynamic leveling
+    volArrayCount = ++volArrayCount % SAMPLES;
+    updateMinMavVals(SEGMENT.intensity, x, SEGLEN);
+  }
+  else
+  {
+    dampSound15msBass = ((dampSound15msBass * 1) + sound) / 2;
+    height = dampSound15msBass * SEGMENT.intensity *  SEGMENT.intensity / 32; // Too sensitive.
+ //  height = height * (y) / 64;            // Reduce sensitity/length.
+  }
+  height = constrain(height, 0, SEGLEN);
 
     if (height)
     {
       if (!leds[height - 1])
         leds[height - 1] = CRGB(125, 255, 125);
     }
-    updateMinMavVals(SEGMENT.intensity, x, SEGLEN);
+   // updateMinMavVals(SEGMENT.intensity, x, SEGLEN);
     for (int i = 0; i < SEGLEN; i++)
     {
       setPixelColor(i, leds[i].red, leds[i].green, leds[i].blue);
@@ -3929,7 +3948,7 @@ uint16_t WS2812FX::mode_gravimeter(void) {//stamps
   bool bass = SEGMENT.bass;
   int y = SEGMENT.intensity;
   int s = SEGLEN;
-  int sound = getSound(bass, gotSound);
+  int sound = getSound(bass, gotSound)* y/128;
   gotSound = true;
   fade_out(SEGMENT.speed);
   if (!bass)
@@ -3943,8 +3962,8 @@ uint16_t WS2812FX::mode_gravimeter(void) {//stamps
   else
   {
     dampSound15msBass = ((dampSound15msBass * 2) + sound) / 3;
-    height = dampSound15msBass * (y) / 64; // Too sensitive.
-    height = height * (y) / 64;            // Reduce sensitity/length.
+    height = dampSound15msBass * (y) *y /32; // Too sensitive.
+  //  height = height * (y) / 64;            // Reduce sensitity/length.
   }
   height = constrain(height, 0, s);
 
@@ -3969,9 +3988,12 @@ uint16_t WS2812FX::mode_plasmoid(void) {                                  // Pla
 
   uint8_t thisbright;
   uint8_t colorIndex;
-  int sound = getSound(SEGMENT.bass, gotSound);
+  int sound = getSound(SEGMENT.bass, gotSound)*SEGMENT.intensity/128;
   gotSound = true;
-
+if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/16;
+else
+sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
   thisphase += beatsin8(6,-4,4);                                          // You can change direction and speed individually.
   thatphase += beatsin8(7,-4,4);                                          // Two phase values to make a complex pattern. By Andrew Tuline.
 
@@ -4001,6 +4023,10 @@ uint16_t WS2812FX::mode_puddles(void) {                                   // Pud
   fade_out(fadeVal);
   int sound = getSound(SEGMENT.bass, gotSound);
   gotSound = true;
+  if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/16;
+else
+sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
   if (sound>0 ) {
     size = sound * SEGMENT.intensity /256 /8 + 1;                        // Determine size of the flash based on the volume.
     if (pos+size>= SEGLEN) size=SEGLEN-pos;
@@ -4040,7 +4066,7 @@ uint16_t WS2812FX::mode_midnoise(void) {                  //bonfire             
       }
   int x=_segment_index;
   bool bass= SEGMENT.bass;
-  int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
+  int sound = getSoundFr(SEGMENT.bass, gotSoundFr)*SEGMENT.intensity/16;
   gotSoundFr = true;
   if(!bass){
  dampSound15msAvg = ((dampSound15msAvg*2)+ sound)/3;
@@ -4048,9 +4074,9 @@ uint16_t WS2812FX::mode_midnoise(void) {                  //bonfire             
   updateMinMavVals(SEGMENT.intensity,x,SEGLEN);
   }
   else{
-    dampSound15msBass = ((dampSound15msBass*2)+ sound)/3;
-  height = dampSound15msBass * (SEGMENT.intensity) / 64;                  // Too sensitive.
-  height = height * (SEGMENT.intensity) / 64;                              // Reduce sensitity/length.
+    dampSound15msBass = ((dampSound15msBass*1)+ sound)/2;
+  height = dampSound15msBass * (SEGMENT.intensity) ;                  // Too sensitive.
+  height = height * (SEGMENT.intensity) / 2;                              // Reduce sensitity/length.
   }
   height = constrain(height, 0, SEGLEN);
 
@@ -4121,6 +4147,10 @@ uint16_t WS2812FX::mode_noisefire(void) {     // Noisefire. By Andrew Tuline.
   const uint8_t yscale = 3;                   // How fast they move
 int sound = getSound(SEGMENT.bass, gotSound);
   gotSound = true;
+  if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/16;
+else
+sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
   CRGB color;
   uint16_t index;                             // Current colour lookup value.
 
@@ -4253,7 +4283,10 @@ uint16_t WS2812FX::mode_ripplepeak(void) {            //sound train        // * 
 CRGB *leds = (CRGB*) ledData;
    int sound = getSound(SEGMENT.bass, gotSound);
     gotSound = true;
-    sound = sound* SEGMENT.intensity/10;
+    if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/10;
+else
+sound= sound * SEGMENT.intensity ;
     leds[0] = ColorFromPalette(currentPalette, constrain(sound, 0, 255), constrain(sound, 0, 255), LINEARBLEND);
     for (int i = SEGLEN - 1; i > 0; i--) {
       leds[i] = leds[i - 1];
@@ -4287,7 +4320,11 @@ uint16_t WS2812FX::mode_waterfall(void) {             //ocean waves     // Water
      
   int sound = getSound(SEGMENT.bass, gotSound);
     gotSound = true;
+    if(!SEGMENT.bass)
   sound = sound * SEGMENT.intensity/10;
+  else
+  sound = sound * SEGMENT.intensity * SEGMENT.intensity*4;
+  constrain(sound,0,255);
   leds[0] = ColorFromPalette(currentPalette, sound, sound+ 10, LINEARBLEND); // Put the sample into the center
   
   for (int i = SEGLEN - 1; i > 0; i--) { //move to the left      // Copy to the left, and let the fade do the rest.
@@ -4318,7 +4355,7 @@ uint16_t WS2812FX::mode_binmap(void) {         //slow fall     // Binmap. Scale 
   bool bass = SEGMENT.bass;
   int y = SEGMENT.intensity;
   int s = SEGLEN;
-  int sound = getSound(bass, gotSound);
+  int sound = getSound(bass, gotSound)* y/128;
   gotSound = true;
 
   if (!bass)
@@ -4331,9 +4368,9 @@ uint16_t WS2812FX::mode_binmap(void) {         //slow fall     // Binmap. Scale 
   }
   else
   {
-    dampSound15msBass = ((dampSound15msBass * 2) + sound) / 3;
-    height = dampSound15msBass * (y) / 64; // Too sensitive.
-    height = height * (y) / 64;            // Reduce sensitity/length.
+    dampSound15msBass = ((dampSound15msBass * 1) + sound) / 2;
+    height = dampSound15msBass * y /2; // Too sensitive.
+  //  height = height * (y) / 64;            // Reduce sensitity/length.
   }
   height = constrain(height, 0, s);
 
@@ -4353,7 +4390,7 @@ uint16_t WS2812FX::mode_binmap(void) {         //slow fall     // Binmap. Scale 
     }
   }
   static uint8_t dotCountLeft;
-  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 6, 1) == 0)
+  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 3, 1) == 0)
   { 
     if (peak[x] > 0)
       peak[x]--;
@@ -4415,7 +4452,11 @@ uint16_t WS2812FX::mode_freqmatrix(void) {        // Freqmatrix. By Andreas Ples
 
     int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
     gotSoundFr = true;
-    int pixVal = sound * SEGMENT.intensity / 10;
+    if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/8;
+else
+sound= sound * SEGMENT.intensity;
+    int pixVal = sound ;
     if (pixVal > 255) pixVal = 255;
 
     CRGB color = 0;
@@ -4474,9 +4515,13 @@ uint16_t WS2812FX::mode_freqpixel(void) {                                 // Fre
   uint16_t locn = random16(0,SEGLEN);
  // uint8_t pixCol = (log10((int)FFT_MajorPeak) - 2.26) * 177;              // log10 frequency range is from 2.26 to 3.7. Let's scale accordingly.
  // setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(SEGMENT.intensity+pixCol, false, PALETTE_SOLID_WRAP, 0), (int)FFT_Magnitude>>3));
-    int sound = getSound(SEGMENT.bass, gotSound);
-    gotSound = true;
-    int pixVal = sound * SEGMENT.intensity / 10;
+  int sound = getSound(SEGMENT.bass, gotSound)*SEGMENT.intensity/128;
+  gotSound = true;
+if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/16;
+else
+sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
+    int pixVal = sound;
     if (pixVal > 255) pixVal = 255;
 
     CHSV c;
@@ -4535,7 +4580,11 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
 
     int sound = getSoundFr(SEGMENT.bass, gotSoundFr);
     gotSoundFr = true;
-    int pixVal = sound * SEGMENT.intensity / 15;
+        if(!SEGMENT.bass)
+sound= sound*SEGMENT.intensity/8;
+else
+sound= sound * SEGMENT.intensity;
+    int pixVal = sound ;
     if (pixVal > 255) pixVal = 255;
 
     CRGB color = 0;
@@ -4586,7 +4635,7 @@ uint16_t WS2812FX::mode_freqwave(void) {          // Freqwave. By Andreas Plesch
 //  ** NOISEMOVE    //
 //////////////////////
 
-uint16_t WS2812FX::mode_noisemove(void) {     // Noisemove    By: Andrew Tuline
+uint16_t WS2812FX::mode_noisemove(void) {     // sound spots    By: Andrew Tuline
 #ifdef ESP32
 
   extern double fftResult[];
@@ -4599,7 +4648,7 @@ uint16_t WS2812FX::mode_noisemove(void) {     // Noisemove    By: Andrew Tuline
     locn = map(locn,7500,58000,0,SEGLEN-1);   // Map that to the length of the strand, and ensure we don't go over.
     locn = locn % (SEGLEN - 1);               // Just to be bloody sure.
 
-    setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(i*64, false, PALETTE_SOLID_WRAP, 0), fftResult[i*3]*20));
+    setPixelColor(locn, color_blend(SEGCOLOR(1), color_from_palette(i*64, false, PALETTE_SOLID_WRAP, 0), constrain(fftResult[i*3]*SEGMENT.intensity*4,0,255)));
   }
 
 #else
@@ -5305,7 +5354,7 @@ uint16_t WS2812FX::mode_visualizer(void)
   bool bass = SEGMENT.bass;
   int y = SEGMENT.intensity;
   int s = SEGLEN;
-  int sound = getSound(bass, gotSound);
+  int sound = getSound(bass, gotSound)* y/128;
   gotSound = true;
 
   if (!bass)
@@ -5319,8 +5368,8 @@ uint16_t WS2812FX::mode_visualizer(void)
   else
   {
     dampSound15msBass = ((dampSound15msBass * 2) + sound) / 3;
-    height = dampSound15msBass * (y) / 64; // Too sensitive.
-    height = height * (y) / 64;            // Reduce sensitity/length.
+    height = dampSound15msBass * y *  y / 32; // Too sensitive.
+ //  height = height * (y) / 64;            // Reduce sensitity/length.
   }
   height = constrain(height, 0, s);
 

@@ -283,7 +283,7 @@ extern  int maxLvlAvg[16];
 #define FX_MODE_WATERFALL              135  //Ocean Waves
 #define FX_MODE_FREQPIXEL              136
 #define FX_MODE_BINMAP                 137  //Slow Fall
-#define FX_MODE_NOISEFIRE              138
+#define FX_MODE_NOISEFIRE              138  // sound fire
 #define FX_MODE_PUDDLEPEAK             139  //Three Bars
 #define FX_MODE_NOISEMOVE              140  //Sound Spots
 #define FX_MODE_VISUALIZER             141
