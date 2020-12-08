@@ -13,7 +13,7 @@
 #ifndef PalettesWLED_h
 #define PalettesWLED_h
 
-#define GRADIENT_PALETTE_COUNT 57
+#define GRADIENT_PALETTE_COUNT 58
 
 const byte ib_jul01_gp[] PROGMEM = {
     0, 194,  1,  1,
@@ -815,6 +815,13 @@ const byte Green2Red[] PROGMEM = {
   169, 255,  0,  0,
   255,  255,  0,  211};
 
+const byte Bharatiya[] PROGMEM = {
+  0,   255, 30, 0,
+  89,  255,30,0,
+  90, 255, 255, 255,
+  159,  255,  255,  255,
+  160, 30, 255, 0,
+  255, 30, 255, 0};
 
 
 // Single array of defined cpt-city color palettes.
@@ -878,7 +885,8 @@ const byte* const gGradientPalettes[] PROGMEM = {
   Yellow2Blue,                  //66-53
   Yellow2Red,                   //67-54
   Candy2,                       //68-55
-  Green2Red                     //69-56
+  Green2Red,                     //69-56
+  Bharatiya                      //70-57
 };
 
 #endif
