@@ -6,6 +6,10 @@
 	<title>LED Settings</title>
 	<script>
     var d=document,laprev=55;
+		function H()
+		{
+			window.open("https://github.com/Aircoookie/WLED/wiki/Settings#led-settings");
+		}
 		function B()
 		{
 			window.open("/settings","_self");
@@ -99,22 +103,37 @@
 </head>
 <body onload="S()">
 	<form id="form_s" name="Sf" method="post">
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr><hr>
-		<h2>Startup Settings</h2>
-		Turn LEDs on after power up/reset: <input type="checkbox" name="BO"><br>
-    Default brightness: <input name="CA" type="number" min="0" max="255" required> (0-255)<br><br>
-    Apply preset <input name="BP" type="number" min="0" max="250" required> at boot (0 uses defaults)
-    <br>- <i>or</i> -<br>
-    Set current preset cycle setting as boot default: <input type="checkbox" name="PC"><br><br>
-	<hr>
-	<h2>Automatic Brightness Limit</h2>
-	Enable automatic brightness limiter: <input type="checkbox" name="ABen" onchange="enABL()" id="able"><br>
+		<div class="helpB"><button type="button" onclick="H()">?</button></div>
+		<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr>
+		<h2>LED setup</h2>
+		LED count: <input name="LC" type="number" min="1" max="1500" oninput="UI()" required><br>
+    <div id="ledwarning" style="color: orange; display: none;">
+        &#9888; You might run into stability or lag issues.<br>
+        Use less than 1000 LEDs per ESP for the best experience!<br>
+      </div>
+		<i>Recommended power supply for brightest white:</i><br>
+		<b><span id="psu">?</span></b><br>
+		<span id="psu2"><br></span>
+		<h3>2D Matrix</h3>
+			<input name="LCW" type="number" min="1" max="1500" oninput="UI()"> x
+			<input name="LCH" type="number" min="1" max="1500" oninput="UI()"><br>
+			<div id="2dwarning" style="color: orange; display: inline;">
+				&#9888; width x height should match LED count!<br>
+			</div>
+			Serpentine: <input type="checkbox" name="LCWHS" checked> (how leds are layed out)<br>
+    <br>
+    Enable automatic brightness limiter: <input type="checkbox" name="ABen" onchange="enABL()" id="able"><br>
     <div id="abl">
       Maximum Current: <input name="MA" type="number" min="250" max="65000" oninput="UI()" required> mA<br>
       <div id="ampwarning" style="color: orange; display: none;">
         &#9888; Your power supply provides high current.<br>
+        To improve the safety of your setup,<br>
+        please use thick cables,<br>
+        multiple power injection points and a fuse!<br>
       </div>
       <i>Automatically limits brightness to stay close to the limit.<br>
+      Keep at &lt;1A if powering LEDs directly from the ESP 5V pin!<br>
+      If you are using an external power supply, enter its rating.<br>
       (Current estimated usage: <span class="pow">unknown</span>)</i><br><br>
       LED voltage (Max. current for a single LED):<br>
       <select name="LAsel" onchange="enLA()">
@@ -127,35 +146,10 @@
       <span id="LAdis" style="display: none;">Custom max. current per LED: <input name="LA" type="number" min="0" max="255" id="la" oninput="UI()" required> mA<br></span>
       <i>Keep at default if you are unsure about your type of LEDs.</i><br>
     </div>
-	<br><hr>
-	<h2>Timer Settings</h2>
-	Default Duration: <input name="TL" type="number" min="1" max="255" required> min<br>
-	Default Target brightness: <input name="TB" type="number" min="0" max="255" required><br>
-	Mode:
-<select name="TW">
-		<option value="0">Wait and set</option>
-		<option value="1">Fade</option>
-		<option value="2">Fade Color</option>
-		<option value="3">Sunrise</option>
-	</select><br><hr>
-	<h2>LED Settings</h2>
-		LED count: <input name="LC" type="number" min="1" max="1500" oninput="UI()" required><br>
-    <div id="ledwarning" style="color: orange; display: none;">
-        &#9888; You might run into stability or lag issues.<br>
-        Use less than 1000 LEDs per ESP for the best experience!<br>
-      </div>
-		<i>Recommended power supply for brightest white:</i><br>
-		<b><span id="psu">?</span></b><br>
-		<span id="psu2"><br></span>
-		<br>
-		Reverse LED order (rotate 180): <input type="checkbox" name="RV">
-			<input name="LCW" type="number" min="1" max="1500" oninput="UI()" hidden>
-			<input name="LCH" type="number" min="1" max="1500" oninput="UI()" hidden>
-			<div id="2dwarning" style="color: orange; display: inline;" hidden>
-			</div>
-<input type="checkbox" name="LCWHS" hidden>
-		<input type="checkbox" name="EW" hidden id="rgbw">
-    <span class="wc" hidden>
+    <br>
+		LEDs are 4-channel type (RGBW): <input type="checkbox" name="EW" onchange=UI() id="rgbw"><br>
+    <span class="wc">
+    Auto-calculate white channel from RGB:<br>
     <select name=AW>
       <option value=0>None</option>
       <option value=1>Brighter</option>
@@ -164,7 +158,8 @@
       <option value=4>Legacy</option>
     </select>
     <br></span>
-		<select name="CO" hidden>
+		Color order:
+		<select name="CO">
 			<option value=0>GRB</option>
       <option value=1>RGB</option>
       <option value=2>BRG</option>
@@ -172,19 +167,39 @@
       <option value=4>BGR</option>
       <option value=5>GBR</option>
 		</select>
-<input type="checkbox" name="GC" hidden>
-<input type="checkbox" name="GB" hidden>
-		<input name="BF" type="number" min="1" max="255" hidden>
-		<input type="checkbox" name="TF" hidden>
-		<input name="TD" maxlength="5" size="2" hidden>
-		<input type="checkbox" name="PF" hidden>
-		<select name="PB" hidden>
+		<h3>Defaults</h3>
+		Turn LEDs on after power up/reset: <input type="checkbox" name="BO"><br>
+    Default brightness: <input name="CA" type="number" min="0" max="255" required> (0-255)<br><br>
+    Apply preset <input name="BP" type="number" min="0" max="250" required> at boot (0 uses defaults)
+    <br>- <i>or</i> -<br>
+    Set current preset cycle setting as boot default: <input type="checkbox" name="PC"><br><br>
+		Use Gamma correction for color: <input type="checkbox" name="GC"> (strongly recommended)<br>
+		Use Gamma correction for brightness: <input type="checkbox" name="GB"> (not recommended)<br><br>
+		Brightness factor: <input name="BF" type="number" min="1" max="255" required> %
+		<h3>Transitions</h3>
+		Crossfade: <input type="checkbox" name="TF"><br>
+		Transition Time: <input name="TD" maxlength="5" size="2"> ms<br>
+		Enable Palette transitions: <input type="checkbox" name="PF">
+		<h3>Timed light</h3>
+		Default Duration: <input name="TL" type="number" min="1" max="255" required> min<br>
+		Default Target brightness: <input name="TB" type="number" min="0" max="255" required><br>
+		Mode:
+    <select name="TW">
+			<option value="0">Wait and set</option>
+			<option value="1">Fade</option>
+			<option value="2">Fade Color</option>
+			<option value="3">Sunrise</option>
+		</select>
+		<h3>Advanced</h3>
+		Palette blending:
+		<select name="PB">
 			<option value="0">Linear (wrap if moving)</option>
 			<option value="1">Linear (always wrap)</option>
 			<option value="2">Linear (never wrap)</option>
 			<option value="3">None (not recommended)</option>
-		</select>
-		<input type="checkbox" name="SL" hidden><hr><hr>
+		</select><br>
+		Reverse LED order (rotate 180): <input type="checkbox" name="RV"><br>
+		Skip first LED: <input type="checkbox" name="SL"><hr>
 		<button type="button" onclick="B()">Back</button><button type="submit">Save</button>
 	</form>
 </body>
