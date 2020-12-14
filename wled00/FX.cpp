@@ -4162,7 +4162,7 @@ sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
   for (int i = 0; i < SEGLEN; i++) {
     index = inoise8(i*xscale,millis()*yscale*SEGLEN/255);                       // X location is constant, but we move along the Y at the rate of millis(). By Andrew Tuline.
     index = (255 - i*256/SEGLEN) * index/128;                                   // Now we need to scale index so that it gets blacker as we get close to one of the ends.
-    color = ColorFromPalette(currentPalette, index, sound*5, LINEARBLEND);  // Use the my own palette.
+    color = ColorFromPalette(currentPalette, index, constrain(sound*5,0,255), LINEARBLEND);  // Use the my own palette.
     setPixelColor(i, color.red, color.green, color.blue);                       // This is a simple y=mx+b equation that's been scaled. index/128 is another scaling.
   }
 
@@ -4323,9 +4323,9 @@ uint16_t WS2812FX::mode_waterfall(void) {             //ocean waves     // Water
     if(!SEGMENT.bass)
   sound = sound * SEGMENT.intensity/10;
   else
-  sound = sound * SEGMENT.intensity * SEGMENT.intensity*4;
+  sound = sound * SEGMENT.intensity *4;
   constrain(sound,0,255);
-  leds[0] = ColorFromPalette(currentPalette, sound, sound+ 10, LINEARBLEND); // Put the sample into the center
+  leds[0] = ColorFromPalette(currentPalette, constrain(sound, 0, 255), constrain(sound, 0, 255)+10, LINEARBLEND); // Put the sample into the center
   
   for (int i = SEGLEN - 1; i > 0; i--) { //move to the left      // Copy to the left, and let the fade do the rest.
     leds[i] = leds[i - 1];
