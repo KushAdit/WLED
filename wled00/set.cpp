@@ -114,8 +114,8 @@ void handleSettingsSet(AsyncWebServerRequest *request, byte subPage)
     if (t > 0) briMultiplier = t;
 
     #ifndef ESP8266
-    strip.matrixWidth = request->arg(F("LCW")).toInt();
-    strip.matrixHeight = request->arg(F("LCH")).toInt();
+    strip.matrixWidth = 1;
+    strip.matrixHeight = request->arg(F("LC")).toInt();
     strip.matrixSerpentine = request->hasArg(F("LCWHS"));
     #endif // ESP8266
   }

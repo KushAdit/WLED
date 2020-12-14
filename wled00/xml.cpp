@@ -311,8 +311,8 @@ void getSettingsJS(byte subPage, char* dest)
     sappends('v',SET_F("LCH"), "");
     sappend('c',SET_F("LCWHS"), 1);
     #else
-    sappend('v',SET_F("LCW"),strip.matrixWidth);
-    sappend('v',SET_F("LCH"),strip.matrixHeight);
+    sappend('v',SET_F("LCW"),1);
+    sappend('v',SET_F("LCH"),ledCount);
     sappend('c',SET_F("LCWHS"),strip.matrixSerpentine);
     #endif // ESP8266
   }
