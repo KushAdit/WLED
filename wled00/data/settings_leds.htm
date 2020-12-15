@@ -16,7 +16,7 @@
       var en = d.getElementById('able').checked;
       d.Sf.LA.value = (en) ? laprev:0;
       d.getElementById('abl').style.display = (en) ? 'inline':'none';
-      d.getElementById('psu2').style.display = (en) ? 'inline':'none';
+      d.getElementById('psu2').style.display = 'none';
       if (d.Sf.LA.value > 0) setABL();
     }
     function enLA()
@@ -47,10 +47,6 @@
 			for (i = 0; i < l; i++) {
 				myC[i].style.display = (d.getElementById('rgbw').checked) ? 'inline':'none';
 			}
-
-      d.getElementById('ledwarning').style.display = (d.Sf.LC.value > 1000) ? 'inline':'none';
-      d.getElementById('ampwarning').style.display = (d.Sf.MA.value > 7200) ? 'inline':'none';
-
 	  if (d.Sf.LA.value == 255) laprev = 12;
 	  else if (d.Sf.LA.value > 0) laprev = d.Sf.LA.value;
 
@@ -92,78 +88,119 @@
 	</style>
 </head>
 <body onload="S()">
+  <div style='text-align:left;display:inline-block;color:#eaeaea;min-width:340px;'>
 	<form id="form_s" name="Sf" method="post">
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr>
-    <h3>Defaults</h3>
-    Turn LEDs on after power up/reset: <input type="checkbox" name="BO"><br>
-    Default brightness: <input name="CA" type="number" min="0" max="255" required> (0-255)<br><br>
-    Apply preset <input name="BP" type="number" min="0" max="250" required> at boot (0 uses defaults)
-    <br>- <i>or</i> -<br>
-    Set current preset cycle setting as boot default: <input type="checkbox" name="PC"><br><br>   
+		<button type="button" onclick="B()">Back</button><br><button type="submit">Save</button><hr><hr>
+    <h1 style='text-align:center;color: #e8ec1f;'>ON STARTUP</h1>		
+    <table>
+			<tr>
+				<td style='width:220px;'><b>Turn LEDs on:</b>
+				</td>
+			<td>
+				<input type="checkbox" name="BO">
+      </td></tr>
+      <tr>
+      <td style='width:220px'><b>Default brightness (0-255):</b>
+      </td>
+    <td>
+      <input name="CA" type="number" min="0" max="255" required>
+    </td></tr></table><br>
+  <table>
+    <tr>
+      <td style='width:220px'><b>Apply preset:</b>
+      </td>
+    <td>
+      <input name="BP" type="number" min="0" max="250" required>
+    </td></tr>
+    <tr><td>OR</td></tr>
+    <tr>
+      <td style='width:220px'><b>Cycle presets:</b>
+      </td>
+    <td>
+      <input type="checkbox" name="PC">
+    </td></tr>
+    </table><br><hr>
+    <h1 style='text-align:center;color: #ff5e00;'>Configuration</h1>
+    <table>
+      <tr>
+        <td style='width:220px'><b>LED count: </b>
+        </td>
+      <td>
+        <input name="LC" type="number" min="1" max="1500" oninput="UI()" required>
+      </td></tr>
+      <tr>
+        <td style='width:220px'><b>Reverse Direction: </b>
+        </td>
+      <td>
+        <input type="checkbox" name="RV">
+      </td></tr>
+    </tr>
+    <tr>
+      <td style='width:220px'><b>Limit Power: </b>
+      </td>
+    <td>
+      <input type="checkbox" name="ABen" onchange="enABL()" id="able">
+    </td></tr>
+    <tr id="abl">
+      <td style='width:220px'><b>Maximum Current (mA): </b>
+      </td>
+    <td>
+      <input name="MA" type="number" min="250" max="65000" oninput="UI()" required>
+    </td></tr>
+      </table><br><hr>
+      <h1 style='text-align:center;color: #09ff00;'>Timer Config</h1> 
+      <table>
+        <tr>
+          <td style='width:220px'><b>Time Period (min): </b>
+          </td>
+        <td>
+          <input name="TL" type="number" min="1" max="255" required>
+        </td></tr>
+        <tr>
+          <td style='width:220px'><b>Target Brightness (0-255): </b>
+          </td>
+        <td>
+          <input name="TB" type="number" min="0" max="255" required>
+        </td></tr>
+      </tr>
+      <tr>
+        <td style='width:220px'><b>Mode: </b>
+        </td>
+      <td>
+        <select name="TW">
+          <option value="0">Wait and set</option>
+          <option value="1">Fade</option>
+          <option value="2">Fade Color</option>
+          <option value="3">Sunrise</option>
+        </select>
+      </td></tr>
+        </table><hr><hr>
 
-    Enable automatic brightness limiter: <input type="checkbox" name="ABen" onchange="enABL()" id="able"><br>
-    <div id="abl">
-      Maximum Current: <input name="MA" type="number" min="250" max="65000" oninput="UI()" required> mA<br>
-      <div id="ampwarning" style="color: orange; display: none;">
-        &#9888; Your power supply provides high current.<br>
-        To improve the safety of your setup,<br>
-        please use thick cables,<br>
-        multiple power injection points and a fuse!<br>
-      </div>
-      <i>Automatically limits brightness to stay close to the limit.<br>
-      Keep at &lt;1A if powering LEDs directly from the ESP 5V pin!<br>
-      If you are using an external power supply, enter its rating.<br>
-      (Current estimated usage: <span class="pow">unknown</span>)</i><br><br>
-      LED voltage (Max. current for a single LED):<br>
-      <select name="LAsel" onchange="enLA()">
+<span class="pow" hidden></span>
+      <select name="LAsel" onchange="enLA()" hidden>
         <option value="55" selected>5V default (55mA)</option>
         <option value="35">5V efficient (35mA)</option>
         <option value="30">12V (30mA)</option>
         <option value="255">WS2815 (12mA)</option>
         <option value="50">Custom</option>
-      </select><br>
-      <span id="LAdis" style="display: none;">Custom max. current per LED: <input name="LA" type="number" min="0" max="255" id="la" oninput="UI()" required> mA<br></span>
-      <i>Keep at default if you are unsure about your type of LEDs.</i><br>
-    </div>
-    <br>
-		LED count: <input name="LC" type="number" min="1" max="1500" oninput="UI()" required><br>
-    <div id="ledwarning" style="color: orange; display: none;">
-        &#9888; You might run into stability or lag issues.<br>
-        Use less than 1000 LEDs per ESP for the best experience!<br>
-      </div>
-      Reverse LED order (rotate 180): <input type="checkbox" name="RV"><br>
-  		<h3>Timed light</h3>
-		Default Duration: <input name="TL" type="number" min="1" max="255" required> min<br>
-		Default Target brightness: <input name="TB" type="number" min="0" max="255" required><br>
-		Mode:
-    <select name="TW">
-			<option value="0">Wait and set</option>
-			<option value="1">Fade</option>
-			<option value="2">Fade Color</option>
-			<option value="3">Sunrise</option>
-		</select>
-      <i>Recommended power supply for brightest white:</i><br>
-		<b><span id="psu">?</span></b><br>
-		<span id="psu2"><br></span>
-		<h3>2D Matrix</h3>
-			<input name="LCW" type="number" min="1" max="1500" oninput="UI()"> x
-			<input name="LCH" type="number" min="1" max="1500" oninput="UI()"><br>
-			Serpentine: <input type="checkbox" name="LCWHS" checked> (how leds are layed out)<br>
-    <br>
+      </select>
+      <span id="LAdis" hidden><input name="LA" id="la" hidden></span>
 
-		LEDs are 4-channel type (RGBW): <input type="checkbox" name="EW" onchange=UI() id="rgbw"><br>
+     <span id="psu" hidden></span>
+		<span id="psu2" hidden></span>
+			<input name="LCW"hidden>
+			<input name="LCH" hidden>
+      <input hidden name="LCWHS" >
+      <input type="checkbox" name="EW" onchange=UI() id="rgbw" hidden>
     <span class="wc">
-    Auto-calculate white channel from RGB:<br>
     <select name=AW>
       <option value=0>None</option>
       <option value=1>Brighter</option>
       <option value=2>Accurate</option>
       <option value=3>Dual</option>
       <option value=4>Legacy</option>
-    </select>
-    <br></span>
-		Color order:
-		<select name="CO">
+    </select></span>
+		<select name="CO" hidden>
 			<option value=0>GRB</option>
       <option value=1>RGB</option>
       <option value=2>BRG</option>
@@ -171,23 +208,21 @@
       <option value=4>BGR</option>
       <option value=5>GBR</option>
 		</select>
-	Use Gamma correction for color: <input type="checkbox" name="GC"> (strongly recommended)<br>
-		Use Gamma correction for brightness: <input type="checkbox" name="GB"> (not recommended)<br><br>
-		Brightness factor: <input name="BF" type="number" min="1" max="255" required> %
-		<h3>Transitions</h3>
-		Crossfade: <input type="checkbox" name="TF"><br>
-		Transition Time: <input name="TD" maxlength="5" size="2"> ms<br>
-		Enable Palette transitions: <input type="checkbox" name="PF">
-		<h3>Advanced</h3>
-		Palette blending:
-		<select name="PB">
+	<input type="checkbox" name="GC" hidden>
+		<input type="checkbox" name="GB" hidden>
+		<input name="BF" hidden>
+		<input hidden name="TF">
+		<input name="TD" hidden>
+		<input hidden name="PF">
+		<select name="PB" hidden>
 			<option value="0">Linear (wrap if moving)</option>
 			<option value="1">Linear (always wrap)</option>
 			<option value="2">Linear (never wrap)</option>
 			<option value="3">None (not recommended)</option>
-		</select><br>
-		Skip first LED: <input type="checkbox" name="SL"><hr>
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button>
-	</form>
+		</select>
+		<input hidden name="SL">
+		<button type="button" onclick="B()">Back</button><br><button type="submit">Save</button>
+  </form>
+</div>
 </body>
 </html>

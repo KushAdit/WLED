@@ -11,37 +11,109 @@ function GetV(){var d=document;}
 </script>
 <style>@import url("style.css");</style></head>
 <body onload="S()">
+  <div style='text-align:left;display:inline-block;color:#eaeaea;min-width:340px;'>
 <form id="form_s" name="Sf" method="post">
-<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr><hr>
-
-Note : All these are Advanced settings and apply only when lIGHT is connected to a Home WIFI network, Otherwise, of no use.<br>
+<button type="button" onclick="B()">Back</button><br><button type="submit">Save</button><hr><hr>
+<h1 style='text-align:center;color: #ff002b;'>NOTE</h1>
+<b style='margin: 50px;'>All these are Advanced settings</b><br><b style='margin: 50px;'>and apply only when lIGHT is </b><br><b style='margin: 50px;'>connected to a Home WIFI network.</b><br><b style='margin: 50px;'>Otherwise, of no use.</b><br>
 <hr>
-<h2>Audio Sync</h2>
-Mode: <select name="ASE">
-  <option value=0>Disabled</option>
-  <option value=1>Transmit</option>
-  <option value=2>Receive</option>
-</select>
-Port: <input name="ASP" type="number" min="1" max="65535" class="d5"><br>
+<h1 style='text-align:center;color: #e8ec1f;'>Audio Sync</h1>
+<table>
+  <tr>
+    <td style='width:220px;'><b>Mode :</b>
+    </td>
+  <td>
+    <select name="ASE">
+      <option value=0>Disabled</option>
+      <option value=1>Transmit</option>
+      <option value=2>Receive</option>
+    </select>
+  </td></tr>
+  <tr>
+  <td style='width:220px'><b>Port :</b>
+  </td>
+<td>
+  <input name="ASP" type="number" min="1" max="65535" class="d5">
+</td></tr></table><br>
 <i>Reboot required for changes to take effect.</i>
 <hr>
-<h2>Alexa Voice Assistant Support</h2>
-Enable discovery by Alexa: <input type="checkbox" name="AL"><br>
-Alexa invocation name: <input name="AI" maxlength="32">
+<h2 style='text-align:center;color: #ff7b00;'>Alexa Voise Assistant Support</h2>
+<table><tr>
+  <td style='width:220px'><b>Enable discovery by Alexa :</b>
+  </td>
+<td>
+  <input type="checkbox" name="AL">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Alexa invocation name :</b>
+  </td>
+<td>
+  <input name="AI" maxlength="32" class="d5">
+</td></tr>
+</table><br>
+
 <hr>
-<h2>LED lIGHT Broadcast</h2>
-UDP Port: <input name="UP" type="number" min="1" max="65535" class="d5" required><br>
-2nd Port: <input name="U2" type="number" min="1" max="65535" class="d5" required><br>
-Receive <input type="checkbox" name="RB">Brightness, <input type="checkbox" name="RC">Color, and <input type="checkbox" name="RX">Effects<br>
-Send notifications on direct change: <input type="checkbox" name="SD"><br>
+<h2 style='text-align:center;color: #09ff00;'>LED lIGHT Broadcast</h2>
+<table><tr>
+  <td style='width:220px'><b>UDP Port :</b>
+  </td>
+<td>
+  <input name="UP" type="number" min="1" max="65535" class="d5" required>
+</td></tr>
+<tr>
+  <td style='width:220px'><b>2nd Port :</b>
+  </td>
+<td>
+  <input name="U2" type="number" min="1" max="65535" class="d5" required>
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Receive :</b>
+  </td>
+</tr>
+<tr>
+  <td style='width:180px'><b style='margin: 40px;'>Brightness :</b>
+  </td>
+<td>
+  <input type="checkbox" name="RB">
+</td></tr>
+<tr>
+  <td style='width:180px'><b style='margin: 40px;'>Color :</b>
+  </td>
+<td>
+  <input type="checkbox" name="RC">
+</td></tr>
+<tr>
+  <td style='width:180px'><b style='margin: 40px;'>Effects :</b>
+  </td>
+<td>
+  <input type="checkbox" name="RX">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Send notifications on direct change :</b>
+  </td>
+<td>
+  <input type="checkbox" name="SD">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Send Alexa notifications :</b>
+  </td>
+<td>
+  <input type="checkbox" name="SA">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Receive UDP realtime :</b>
+  </td>
+<td>
+  <input type="checkbox" name="RD">
+</td></tr>
+</table><br>
 <input hidden name="SB">
-Send Alexa notifications: <input type="checkbox" name="SA"><br>
+
 <input name="SH" hidden>
 <input hidden name="SM">
-Send notifications twice: <input type="checkbox" name="S2"><br>
-<i>Reboot required to apply changes. </i>
-<h3>Realtime</h3>
-Receive UDP realtime: <input type="checkbox" name="RD"><br><hr>
+<input hidden name="S2">
+<i>Reboot required for changes to take effect.</i>
+<hr>
 
 <input hidden name="BT">
 <select name=IR hidden>
@@ -61,18 +133,58 @@ Receive UDP realtime: <input type="checkbox" name="RD"><br><hr>
 <input name="WO" hidden>
 <input name="BK" hidden>
 
-<h3>MQTT</h3>
-Enable MQTT: <input type="checkbox" name="MQ"><br>
-Broker: <input name="MS" maxlength="32">
-Port: <input name="MQPORT" type="number" min="1" max="65535" class="d5"><br>
-<b>The MQTT credentials are sent over an unsecured connection.<br>
-Never use the MQTT password for another service!</b><br>
-Username: <input name="MQUSER" maxlength="40"><br>
-Password: <input type="password" input name="MQPASS" maxlength="40"><br>
-Client ID: <input name="MQCID" maxlength="40"><br>
-Device Topic: <input name="MD" maxlength="32"><br>
-Group Topic: <input name="MG" maxlength="32"><br>
-<i>Reboot required to apply changes. </i>
+<h1 style='text-align:center;color: #ff00ea;'>MQTT</h1>
+<table><tr>
+  <td style='width:220px'><b>Enable MQTT :</b>
+  </td>
+<td>
+  <input type="checkbox" name="MQ">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Broker :</b>
+  </td>
+<td>
+  <input name="MS" maxlength="32" class="d5">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Port :</b>
+  </td>
+<td>
+  <input name="MQPORT" type="number" min="1" max="65535" class="d5">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Username :</b>
+  </td>
+<td>
+  <input name="MQUSER" maxlength="40" class="d5">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Password :</b>
+  </td>
+<td>
+  <input type="password" input name="MQPASS" maxlength="40" class="d5">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Client ID :</b>
+  </td>
+<td>
+  <input name="MQCID" maxlength="40" class="d5">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Device Topic :</b>
+  </td>
+<td>
+  <input name="MD" maxlength="32" class="d5">
+</td></tr>
+<tr>
+  <td style='width:220px'><b>Group Topic :</b>
+  </td>
+<td>
+  <input name="MG" maxlength="32" class="d5">
+</td></tr>
+</table>
+ <br>
+<i>Reboot required for changes to take effect.</i>
 <input name="HL" hidden><input name="HI" hidden><input hidden name="HP">
 <input hidden name="HO"><input hidden name="HB"><input hidden name="HC">
 <input name="H0" hidden> 
@@ -82,7 +194,8 @@ Group Topic: <input name="MG" maxlength="32"><br>
 <span class="sip" hidden></span>
 <hr>
 <hr>
-<button type="button" onclick="B()">Back</button><button type="submit">Save</button>
+<button type="button" onclick="B()">Back</button><br><button type="submit">Save</button>
 </form>
+</div>
 </body>
 </html>

@@ -193,6 +193,9 @@ button {
 	display: inline-block;
 	vertical-align: middle;
 }
+.ilc {
+	vertical-align: middle;
+}
 
 #liveview {
 	height: 4px;
@@ -920,7 +923,7 @@ input[type=number]::-webkit-outer-spin-button {
 <div class ="container">
   <div id="Animate" class="tabcontent">
 	<p class="hd">Color Palette</p>
-    <div class="il">
+    <div class="ilc">
       <i class="icons sel-icon" onclick="tglHex()">&#xe2b3;</i>
       <select class="btn sel" id="selectPalette" onchange="setPalette()">
         <option>Color Wheel</option>
@@ -928,7 +931,7 @@ input[type=number]::-webkit-outer-spin-button {
       </select>
 	</div>
 	<p class="hd">Effect Mode</p>
-    <div class="il">
+    <div class="ilc">
       <i class="icons sel-icon" onclick="tglHex()">&#xe34b;</i>
       <select class="btn sel" id="selectEffect" onchange="setEffect()">
         <option>Solid</option>

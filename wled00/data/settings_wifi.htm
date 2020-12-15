@@ -16,16 +16,41 @@
 	</script>
 	<style>
 		@import url("style.css");
+
 	</style>
 </head>
-<body onload="GetV()">
+<body onload="GetV()"> 
+	<div style='text-align:left;display:inline-block;color:#eaeaea;min-width:340px;'>
 	<form id="form_s" name="Sf" method="post">
-		<button type="button" onclick="B()">Back</button><button type="submit">Save & Connect</button><hr><hr>
-		<h2>Hotspot Settings</h2>
-		lIGHT Hotspot Name :<br> <input name="AS" maxlength="32"><br>
-		Hide name: <input type="checkbox" name="AH"><br>
-		Password (leave empty for open):<br> <input type="password" name="AP" maxlength="63"><br>
-		Hotspot WiFi channel : <input name="AC" type="number" min="1" max="13" required><br>
+		<button type="button" onclick="B()">Back</button><br><button type="submit">Save & Connect</button><hr><hr>
+		<h1 style='text-align:center;color: #e8ec1f;'>HOTSPOT SETTINGS</h1>	
+		<table>
+			<tr>
+				<td style='width:220px;'><b>lIGHT Hotspot Name :</b>
+				</td>
+			<td>
+				<input class="smaller" name="AS" maxlength="32">
+      </td></tr>
+      <tr>
+      <td style='width:220px'><b>Hide Network : </b>
+      </td>
+    <td>
+		<input type="checkbox" name="AH">
+	</td></tr>
+	<tr>
+		<td style='width:220px'><b>Password : </b>
+		</td>
+	  <td>
+		<input type="password" name="AP" class="smaller" maxlength="63">
+		<tr>
+			<td style='width:220px'><b>WiFi channel : </b>
+			</td>
+		  <td>
+			<input name="AC" type="number" min="1" max="13" required>
+		  </td></tr>
+	  </td></tr></table><br>
+  <table>
+
     Hotspot opens when :
     <select name="AB">
     <option value="0">No connection after boot</option>
@@ -34,9 +59,22 @@
     <option value="3">Never (not recommended)</option></select><br>
 		Hotspot IP: <span class="sip"> Not active </span><br><br>
 		<hr>
-		<h2>Connect to Home WIFI Network</h2>
-		Home WIFI Name (empty to not connect): <br><input name="CS" maxlength="32"><br>
-		Password: <br> <input type="password" name="CP" maxlength="63"><br>
+		<h2 style='text-align:center;color: #ff7b00;'>Connect to Home WIFI Network</h2>
+		<table>
+			<tr>
+				<td style='width:156px;'><b>WIFI Name :</b>
+				</td>
+			<td>
+				<input name="CS" maxlength="32">
+      </td></tr>
+      <tr>
+      <td style='width:156px'><b>Password : </b>
+      </td>
+    <td>
+		<input type="password" name="CP" maxlength="63">
+	</td></tr>
+</table><br>
+		
 		<h3>Advanced</h3>
 		Static IP (leave at 0.0.0.0 for DHCP):<br>
 		<input name="I0" type="number" min="0" max="255" required> .
@@ -57,12 +95,20 @@
 		http:// <input name="CM" maxlength="32"> .local<br>
 		Client IP: <span class="sip"> Not connected </span> <br>
 		<hr>
-		<h3>In Case Of Frequent Connection Loss </h3>
-		Disable WiFi sleep: <input type="checkbox" name="WS"><br>
+		<h3 style='text-align:center;color:#09ff00;'>In Case Of Frequent Connection Loss </h3>
+		<table>
+			<tr>
+				<td style='width:220px;'><b>Disable WiFi sleep :</b>
+				</td>
+			<td>
+				<input type="checkbox" name="WS">
+      </td></tr>
+</table>
 		<i>Can help with connectivity issues.<br>
-		Do not enable if WiFi is working correctly, increases power consumption.</i>
+		Do not enable if WiFi works correctly,<br> increases power consumption.</i>
 		<hr><hr>
-		<button type="button" onclick="B()">Back</button><button type="submit">Save & Connect</button>
+		<button type="button" onclick="B()">Back</button><br><button type="submit">Save & Connect</button>
 	</form>
+	</div>
 </body>
 </html>

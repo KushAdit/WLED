@@ -20,12 +20,26 @@
 	</style>
 </head>
 <body onload="GetV()">
+	<div style='text-align:left;display:inline-block;color:#eaeaea;min-width:340px;'>
 	<form id="form_s" name="Sf" method="post">
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr>
-		<h2>Sound Input Settings</h2>
-		Squelch: <input name="SQ" type="number" min="0" max="255" required><br>
-		Gain: <input name="GN" type="number" min="0" max="255" required><br>
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button>
+		<button type="button" onclick="B()">Back</button><br><button type="submit">Save</button><hr><hr>
+		<h1 style='text-align:center;color: #e8ec1f;'>Sound Settings</h1>
+		<table>
+			<tr>
+				<td style='width:220px;'><b>Noise Threshold :</b>
+				</td>
+			<td>
+				<input name="SQ" type="number" min="0" max="255" required>
+      </td></tr>
+      <tr>
+      <td style='width:220px'><b>Gain Multiplier :</b>
+      </td>
+    <td>
+		<input name="GN" type="number" min="0" max="255" required>
+    </td></tr></table><br>
+  <table><hr><hr>
+		<button type="button" onclick="B()">Back</button><br><button type="submit">Save</button>
 	</form>
+	</div>
 </body>
-</html>
+</html> 

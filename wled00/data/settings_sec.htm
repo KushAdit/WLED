@@ -23,16 +23,18 @@
 	</style>
 </head>
 <body onload="GetV()">
+	<div style='text-align:left;display:inline-block;color:#eaeaea;min-width:340px;'>
 	<form id="form_s" name="Sf" method="post">
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr><hr>
-		<h2>Factory Reset</h2>
-		Factory reset: <input type="checkbox" name="RS"><br>
-		Select Checkbox and hit Save<br><br>
+		<button type="button" onclick="B()">Back</button><br><button class="bred" type="submit">RESET</button><hr><hr>
+		<h1 style='text-align:center;color:#d43535;'>Factory Reset</h1>
+	<b><div style='width:220px;display:inline-block;'> Reset Now: </div><input type="checkbox" name="RS"></b><br>
+		Select Checkbox and hit Reset Button<br><br>
 		<hr>
-		<h2>Software Update</h2>
-		<button type="button" onclick="U()">Manual OTA Update</button><br>
-		Server message: <span class="sip"> Response error! </span><hr><hr>
-		<button type="button" onclick="B()">Back</button><button type="submit">Save</button>
+		<h1 style='text-align:center;color: #47c266;'>Manual Update</h1>	
+		<button class="bgrn" type="button" onclick="U()">Manual OTA Update</button><br><br>
+		<span class="sip" hidden></span><hr><hr>
+		<button type="button" onclick="B()">Back</button><br><button class="bred" type="submit">RESET</button>
 	</form>
+	</div>
 </body>
 </html>
