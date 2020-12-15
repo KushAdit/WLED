@@ -896,14 +896,73 @@ input[type=number]::-webkit-outer-spin-button {
 		padding: 8px 0 4px 0;
 	}
 }
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 20px;
+}
 
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(80, 80, 80);
+  -webkit-transition: .4s;
+  transition: .4s;
+  box-shadow: 0 0 3px #ffffff;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 0px;
+  bottom: 0px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #a89f9f;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 6px #ffffff;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
 
 </style>
 </head>
 <body onload="onLoad()">
 
-<div id="cv" class="overlay">Loading WLED UI...</div>
-<noscript><div class="overlay" style="opacity:1;">Sorry, WLED UI needs JavaScript!</div></noscript>
+<div id="cv" class="overlay">Loading UI...</div>
+<noscript><div class="overlay" style="opacity:1;">Sorry, UI needs JavaScript!</div></noscript>
 <div id="bg"></div>
 
 <div class="wrapper" id="top">
@@ -912,8 +971,8 @@ input[type=number]::-webkit-outer-spin-button {
 			<button id="buttonPower" onclick="togglePower()" class="tgl"><i class="icons">&#xe08f;</i><p class="tab-label">Power</p></button>
 			<button id="buttonNl" onclick="toggleNl()"><i class="icons">&#xe2a2;</i><p class="tab-label">Timer</p></button>
 			<button id="buttonSync" onclick="tglLabels()"><i class="icons">&#xe116;</i><p class="tab-label">Hide</p></button>
-		<button id="buttonI" onclick="toggleInfo()"><i class="icons">&#xe34b;</i><p class="tab-label">Info</p></button>
-		<button id="resetbtn" onclick="cnfReset()"><i class="icons">&#xe50;</i><p class="tab-label">Reboot</p></button>	
+		<button id="buttonI" onclick="toggleInfo()"><i class="icons">&#9776;</i><p class="tab-label">Info</p></button>
+		<button id="resetbtn" onclick="cnfReset()"><i class="icons">&#9889;</i><p class="tab-label">Reboot</p></button>	
 		<button onclick="window.location.href = '/settings';"><i class="icons">&#xe0a2;</i><p class="tab-label">Config</p></button>
 		</div>
 		<iframe id="liveview" src="about:blank"></iframe>
@@ -961,13 +1020,13 @@ input[type=number]::-webkit-outer-spin-button {
 	<input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
 	<div class="sliderdisplay"></div>
   </div>
-</div>
+</div><br>
 <div>
-<label class="check psvl">
-	MUSIC- BASSY BEATS
-	 <input type="checkbox" id="bassyBeats" onchange="setBassyB()">
-	 <span class="checkmark psv"></span>
-   </label>
+	<i style='font-size:30px;'>&#9835;</i>	MUSIC- BASSY BEATS &#160;
+   <label class="switch">
+	<input type="checkbox" id="bassyBeats" onchange="setBassyB()">
+	<span class="slider round"></span>
+  </label>
 </div>
 	<div id="picker" class="noslide"></div>
 	<div id="rgbwrap">
@@ -1028,11 +1087,13 @@ input[type=number]::-webkit-outer-spin-button {
 			Loading...
 		</div><br><hr>
 		<h2> Cycle Presets </h2>
-		 <label class="check psvl">
-			Turn On
+		<div>
+			Turn On &#160;
+		   <label class="switch">
 			<input type="checkbox" id="cyToggle" onchange="toggleCY()">
-			<span class="checkmark psv"></span>
-		</label><br>
+			<span class="slider round"></span>
+		  </label>
+		</div><br>
 		First preset: <input id="cycs" class="noslide" type="number" min="1" max="249" value="1"><br>
 		Last preset: <input id="cyce" class="noslide" type="number" min="2" max="250" value="3"><br>
 		Time per preset: <input id="cyct" class="noslide" type="number" min="0.2" max="6553.5" step="0.1" value="5">s<br>
@@ -1042,7 +1103,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 <div class="tab bot" id="bot">
 	<button class="tablinks" onclick="openTab(0)"><i class="icons">&#xe2b3;</i><p class="tab-label">Animate</p></button>
-	<button class="tablinks" onclick="openTab(1)"><i class="icons">&#xe34b;</i><p class="tab-label">Segments</p></button>
+	<button class="tablinks" onclick="openTab(1)"><i class="icons">&#9986;</i><p class="tab-label">Segments</p></button>
 	<button class="tablinks" onclick="openTab(2)"><i class="icons">&#xe04c;</i><p class="tab-label">Favorites</p></button>
 </div>
 
@@ -1573,11 +1634,10 @@ function populateSegments(s)
 		if (i > lSeg) lSeg = i;
 
 		cn += `<div class="seg">
-			<label class="check schkl">
-				&nbsp;
-				<input type="checkbox" id="seg${i}sel" onchange="selSeg(${i})" ${inst.sel ? "checked":""}>
-				<span class="checkmark schk"></span>
-			</label>
+			<label class="switch">
+	            <input type="checkbox" id="seg${i}sel" onchange="selSeg(${i})" ${inst.sel ? "checked":""}>
+	            <span class="slider round"></span>
+            </label>
 			<div class="segname" onclick="selSegEx(${i})">
 				Segment ${i}
 			</div>
@@ -1611,16 +1671,16 @@ function populateSegments(s)
 			</div>
 				<i class="icons e-icon cnf cnf-s" id="segc${i}" onclick="setSeg(${i})">&#xe390;</i>
 				<i class="icons e-icon del" id="segd${i}" onclick="delSeg(${i})">&#xe037;</i>
-				<label class="check revchkl">
-					Reverse direction
-					<input type="checkbox" id="seg${i}rev" onchange="setRev(${i})" ${inst.rev ? "checked":""}>
-					<span class="checkmark schk"></span>
-				</label>
-				<label class="check revchkl">
-					Mirror effect
-					<input type="checkbox" id="seg${i}mi" onchange="setMi(${i})" ${inst.mi ? "checked":""}>
-					<span class="checkmark schk"></span>
-				</label>
+				<br><br>
+				<label class="switch">
+	                <input type="checkbox" id="seg${i}rev" onchange="setRev(${i})" ${inst.rev ? "checked":""}>
+	                <span class="slider round"></span>
+                </label>&#160; Reverse direction
+				<br><br>
+				<label class="switch">
+	                <input type="checkbox" id="seg${i}mi" onchange="setMi(${i})" ${inst.mi ? "checked":""}>
+	                <span class="slider round"></span>
+                </label>&#160; Mirror effect
 			</div>
 		</div><br>`;
 	}
