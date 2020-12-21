@@ -98,9 +98,21 @@ void colorUpdated(int callMode)
   if (callMode != NOTIFIER_CALL_MODE_INIT && 
       callMode != NOTIFIER_CALL_MODE_DIRECT_CHANGE && 
       callMode != NOTIFIER_CALL_MODE_NO_NOTIFY) strip.applyToAllSelected = true; //if not from JSON api, which directly sets segments
+
+  bool someSel = false;
+
+  if (callMode == NOTIFIER_CALL_MODE_NOTIFICATION) {
+    someSel = (receiveNotificationBrightness || receiveNotificationColor || receiveNotificationEffects);
+  }
+  
+  //Notifier: apply received FX to selected segments only if actually receiving FX
+  if (someSel) strip.applyToAllSelected = receiveNotificationEffects;
   
   bool fxChanged = strip.setEffectConfig(effectCurrent, effectSpeed, effectIntensity, effectFFT1, effectFFT2, effectFFT3, effectPalette, effectBass);
   bool colChanged = colorChanged();
+
+  //Notifier: apply received color to selected segments only if actually receiving color
+  if (someSel) strip.applyToAllSelected = receiveNotificationColor;
 
   if (fxChanged || colChanged)
   {
@@ -111,7 +123,7 @@ void colorUpdated(int callMode)
     notify(callMode);
     
     //set flag to update blynk and mqtt
-    if (callMode != NOTIFIER_CALL_MODE_PRESET_CYCLE) interfaceUpdateCallMode = callMode;
+    interfaceUpdateCallMode = callMode;
   } else {
     if (nightlightActive && !nightlightActiveOld && 
         callMode != NOTIFIER_CALL_MODE_NOTIFICATION && 
@@ -307,10 +319,10 @@ void handleNightlight()
     if (bri == 0 || nightlightActive) return;
 
     if (presetCycCurr < presetCycleMin || presetCycCurr > presetCycleMax) presetCycCurr = presetCycleMin;
-    applyPreset(presetCycCurr);
+    applyPreset(presetCycCurr); //this handles colorUpdated() for us
     presetCycCurr++;
     if (presetCycCurr > 250) presetCycCurr = 1;
-    colorUpdated(NOTIFIER_CALL_MODE_PRESET_CYCLE);
+    interfaceUpdateCallMode = 0; //disable updates to MQTT and Blynk
   }
 }
 

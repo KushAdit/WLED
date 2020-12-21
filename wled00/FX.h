@@ -143,7 +143,7 @@ extern  int maxLvlAvg[16];
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT                     142
+#define MODE_COUNT  144
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -259,34 +259,36 @@ extern  int maxLvlAvg[16];
 #define FX_MODE_CHUNCHUN               111
 #define FX_MODE_DANCING_SHADOWS        112
 #define FX_MODE_WASHING_MACHINE        113
-#define FX_MODE_PERLINMOVE             114
-#define FX_MODE_2DFIRENOISE            115  //Firebase
-#define FX_MODE_2DSQUAREDSWIRL         116  //Squirrels
-#define FX_MODE_2DFIRE2012             117  //Fire High Flames
-#define FX_MODE_2DDNA                  118  //Time Traveller
-#define FX_MODE_2DMATRIX               119  //Matrix
-#define FX_MODE_2DMEATBALLS            120  //White Fusion
-#define FX_MODE_CYCLEEFFECTS           121  //cycle effects
-#define FX_MODE_NOISEPEAK              122  // cycle sound effects
-#define FX_MODE_PIXELS                 123  //Twitchy
-#define FX_MODE_PIXELWAVE              124  //Volume
-#define FX_MODE_JUGGLES                125
-#define FX_MODE_MATRIPIX               126
-#define FX_MODE_GRAVIMETER             127  //Stamps
-#define FX_MODE_PLASMOID               128
-#define FX_MODE_PUDDLES                129
-#define FX_MODE_MIDNOISE               130  //Bonfire
-#define FX_MODE_NOISEMETER             131
-#define FX_MODE_FREQWAVE               132
-#define FX_MODE_FREQMATRIX             133
-#define FX_MODE_RIPPLEPEAK             134  //Sound Train
-#define FX_MODE_WATERFALL              135  //Ocean Waves
-#define FX_MODE_FREQPIXEL              136
-#define FX_MODE_BINMAP                 137  //Slow Fall
-#define FX_MODE_NOISEFIRE              138  // sound fire
-#define FX_MODE_PUDDLEPEAK             139  //Three Bars
-#define FX_MODE_NOISEMOVE              140  //Sound Spots
-#define FX_MODE_VISUALIZER             141
+#define FX_MODE_CANDY_CANE             114
+#define FX_MODE_BLENDS                 115
+#define FX_MODE_PERLINMOVE             116
+#define FX_MODE_2DFIRENOISE            117  //Firebase
+#define FX_MODE_2DSQUAREDSWIRL         118  //Squirrels
+#define FX_MODE_2DFIRE2012             119  //Fire High Flames
+#define FX_MODE_2DDNA                  120  //Time Traveller
+#define FX_MODE_2DMATRIX               121  //Matrix
+#define FX_MODE_2DMEATBALLS            122  //White Fusion
+#define FX_MODE_CYCLEEFFECTS           123  //cycle effects
+#define FX_MODE_NOISEPEAK              124  // cycle sound effects
+#define FX_MODE_PIXELS                 125  //Twitchy
+#define FX_MODE_PIXELWAVE              126  //Volume
+#define FX_MODE_JUGGLES                127
+#define FX_MODE_MATRIPIX               128
+#define FX_MODE_GRAVIMETER             129  //Stamps
+#define FX_MODE_PLASMOID               130
+#define FX_MODE_PUDDLES                131
+#define FX_MODE_MIDNOISE               132  //Bonfire
+#define FX_MODE_NOISEMETER             133
+#define FX_MODE_FREQWAVE               134
+#define FX_MODE_FREQMATRIX             135
+#define FX_MODE_RIPPLEPEAK             136  //Sound Train
+#define FX_MODE_WATERFALL              137  //Ocean Waves
+#define FX_MODE_FREQPIXEL              138
+#define FX_MODE_BINMAP                 139  //Slow Fall
+#define FX_MODE_NOISEFIRE              140  // sound fire
+#define FX_MODE_PUDDLEPEAK             141  //Three Bars
+#define FX_MODE_NOISEMOVE              142  //Sound Spots
+#define FX_MODE_VISUALIZER             143
 //#define FX_MODE_SPECTRAL               125
 //#define FX_FFT_TEST                    142
 
@@ -385,9 +387,31 @@ class WS2812FX {
         WS2812FX::_usedSegmentData -= _dataLen;
         _dataLen = 0;
       }
-      void reset(){next_time = 0; step = 0; call = 0; aux0 = 0; aux1 = 0; deallocateData();}
+
+      /** 
+       * If reset of this segment was request, clears runtime
+       * settings of this segment.
+       * Must not be called while an effect mode function is running
+       * because it could access the data buffer and this method 
+       * may free that data buffer.
+       */
+      void resetIfRequired() {
+        if (_requiresReset) {
+          next_time = 0; step = 0; call = 0; aux0 = 0; aux1 = 0; 
+          deallocateData();
+          _requiresReset = false;
+        }
+      }
+
+      /** 
+       * Flags that before the next effect is calculated,
+       * the internal segment state should be reset. 
+       * Call resetIfRequired before calling the next effect function.
+       */
+      void reset() { _requiresReset = true; }
       private:
         uint16_t _dataLen = 0;
+        bool _requiresReset = false;
     } segment_runtime;
 
      WS2812FX() {
@@ -536,6 +560,8 @@ class WS2812FX {
       _mode[FX_MODE_2DMEATBALLS]             = &WS2812FX::mode_2Dmeatballs;
 //      _mode[FX_FFT_TEST]                     = &WS2812FX::fft_test;
       _mode[FX_MODE_VISUALIZER]              = &WS2812FX::mode_visualizer;
+      _mode[FX_MODE_CANDY_CANE]              = &WS2812FX::mode_candy_cane;
+      _mode[FX_MODE_BLENDS]                  = &WS2812FX::mode_blends;
 
       _brightness = DEFAULT_BRIGHTNESS;
       currentPalette = CRGBPalette16(CRGB::Black);
@@ -585,7 +611,8 @@ class WS2812FX {
       applyToAllSelected = true,
       segmentsAreIdentical(Segment* a, Segment* b),
       setEffectConfig(uint8_t m, uint8_t s, uint8_t i, uint8_t f1, uint8_t f2, uint8_t f3, uint8_t p, bool b);
-
+      // return true if the strip is being sent pixel updates
+      isUpdating(void);
     uint8_t
       mainSegment = 0,
       rgbwMode = RGBW_MODE_DUAL,
@@ -787,7 +814,9 @@ class WS2812FX {
       mode_2Dmatrix(void),
       mode_2Dmeatballs(void),
 //      fft_test(void),
-      mode_visualizer(void);
+      mode_visualizer(void),
+      mode_candy_cane(void),
+      mode_blends(void);
 
   private:
     NeoPixelWrapper *bus;
@@ -879,10 +908,10 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "Twinklefox","Twinklecat","Halloween Eyes","Solid Pattern","Solid Pattern Tri","Spots","Spots Fade","Glitter","Candle","Fireworks Starburst",
 "Fireworks 1D","Bouncing Balls","Sinelon","Sinelon Dual","Sinelon Rainbow","Popcorn","Drip","Plasma","Percent","Ripple Rainbow",
 "Heartbeat","Pacifica","Candle Multi","Solid Glitter","Sunrise","Phased","Phased Noise","TwinkleUp","Noise Pal","Sine",
-"Flow","Chunchun","Dancing Shadows","Washing Machine","Perlin Move","Firebase","Squirrels","Fire High Flames","Time Traveller","Matrix",
-"White Fusion","*Cycle Effects","*Cycle Music Effects","*Twitchy","*Volume","*Juggles","*MatriX","*Stamps","*Plasmoid","*Puddles","*Musical Bonfire",
-"*Noise Meter","*Sound2Color Drain","*Sound2Color","*Sound Train","*Ocean Waves","*Sound2Color Pixels","*Slow Fall","*Sound Fire","*Three Bars","*Sound Spots",
-"*Digital Visualizer"
+"Flow","Chunchun","Dancing Shadows","Washing Machine","Candy Cane","Blends","Perlin Move","Firebase","Squirrels","Fire High Flames",
+"Time Traveller","Matrix","White Fusion","*Cycle Effects","*Cycle Music Effects","*Twitchy","*Volume","*Juggles","*MatriX","*Stamps","*Plasmoid",
+"*Puddles","*Musical Bonfire","*Noise Meter","*Sound2Color Drain","*Sound2Color","*Sound Train","*Ocean Waves","*Sound2Color Pixels","*Slow Fall","*Sound Fire",
+"*Three Bars","*Sound Spots","*Digital Visualizer"
 ])=====";
 
 
@@ -894,7 +923,7 @@ const char JSON_palette_names[] PROGMEM = R"=====([
 "Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
 "Aurora","Atlantica","C9 2","C9 New","Retro Clown","Candy","Toxy Reaf","Fairy Reaf","Semi Blue","Pink Candy",
 "Red Reaf","Red & Flash","YBlue","Lite Light","Pink Plasma","Blink Red","Yellow 2 Blue","Yellow 2 Red","Candy2","Green2Red",
-"Bharatiya"
+"Bharatiya","Temperature"
 ])=====";
 
 #endif
