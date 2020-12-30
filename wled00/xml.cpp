@@ -365,6 +365,8 @@ void getSettingsJS(byte subPage, char* dest)
       sappend('v',SET_F("ASE"), 2);
     }
     sappend('v',SET_F("ASP"), audioSyncPort);
+    sappends('s',SET_F("BH"),blynkHost);
+    sappend('v',SET_F("BP"),blynkPort);
 
     #ifdef WLED_ENABLE_MQTT
     sappend('c',SET_F("MQ"),mqttEnabled);

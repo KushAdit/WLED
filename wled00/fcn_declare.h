@@ -20,7 +20,7 @@ void onAlexaChange(EspalexaDevice* dev);
 //void getSample();
 
 //blynk.cpp
-void initBlynk(const char* auth);
+void initBlynk(const char* auth, const char* host, uint16_t port);
 void handleBlynk();
 void updateBlynk();
 
