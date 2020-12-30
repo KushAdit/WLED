@@ -882,6 +882,7 @@ void WS2812FX::handle_palette(uint8_t modeOpt)
       case FX_MODE_RIPPLEPEAK : paletteIndex =  1; break; //party
       case FX_MODE_BINMAP     : paletteIndex =  44; break; //orange&teal
       case FX_MODE_GRAVIMETER : paletteIndex =  22; break; //orange&teal
+      case FX_MODE_WATERFALL  : paletteIndex =  9; break; //orange&teal
     }
   }
   if (SEGMENT.mode >= FX_MODE_METEOR && paletteIndex == 0) paletteIndex = 4;

@@ -3815,9 +3815,9 @@ uint16_t WS2812FX::mode_pixels(void) {  //twitchy            // Pixels. By Andre
 uint16_t WS2812FX::mode_pixelwave(void) {              //volume                   // Pixelwave. By Andrew Tuline.
     int sound = getSound(false, gotSound);
     gotSound = true;
-    static int pixVal=0, mPeak=1000;
-    pixVal = (pixVal*25 + sound * SEGMENT.intensity / 5)/26;
-    if (pixVal > 255) pixVal = 255;
+    SEGENV.aux0=0;
+    SEGENV.aux0 = (SEGENV.aux0*25 + sound * SEGMENT.intensity / 5)/26;
+    if (SEGENV.aux0 > 255) SEGENV.aux0 = 255;
 
     CHSV c;
 
@@ -3826,9 +3826,9 @@ uint16_t WS2812FX::mode_pixelwave(void) {              //volume                 
       // With our sampling rate of 10240Hz we have a usable freq range from roughtly 80Hz to 10240/2 Hz
       // we will treat everything with less than 65Hz as 0
       //Serial.printf("%5d ", FFT_MajorPeak, 0);
-      mPeak= (mPeak * 25 + FFT_MajorPeak)/26;
+      //mPeak= (mPeak * 25 + FFT_MajorPeak)/26;
       int i = getColorFromFr(FFT_MajorPeak);
-      c = CHSV(i, 240, (uint8_t)pixVal);
+      c = CHSV(i, 240, (uint8_t)SEGENV.aux0);
  
       CRGB color = c;
       for(int i=0;i<SEGLEN;i++)                                                        // implicit conversion to RGB supplied by FastLED
@@ -3983,8 +3983,8 @@ uint16_t WS2812FX::mode_gravimeter(void) {//stamps
 
 uint16_t WS2812FX::mode_plasmoid(void) {                                  // Plasmoid. By Andrew Tuline.
 
-  static int16_t thisphase = 0;                                           // Phase of a cubicwave8.
-  static int16_t thatphase = 0;                                           // Phase of the cos8.
+  SEGENV.aux0 = 0;                                           // Phase of a cubicwave8.
+  SEGENV.aux1 = 0;                                           // Phase of the cos8.
 
   uint8_t thisbright;
   uint8_t colorIndex;
@@ -3994,12 +3994,12 @@ if(!SEGMENT.bass)
 sound= sound*SEGMENT.intensity/16;
 else
 sound= sound * SEGMENT.intensity * SEGMENT.intensity /10;
-  thisphase += beatsin8(6,-4,4);                                          // You can change direction and speed individually.
-  thatphase += beatsin8(7,-4,4);                                          // Two phase values to make a complex pattern. By Andrew Tuline.
+  SEGENV.aux0 += beatsin8(6,-4,4);                                          // You can change direction and speed individually.
+  SEGENV.aux1 += beatsin8(7,-4,4);                                          // Two phase values to make a complex pattern. By Andrew Tuline.
 
   for (int i=0; i<SEGLEN; i++) {                                          // For each of the LED's in the strand, set a brightness based on a wave as follows.
-    thisbright = cubicwave8((i*13)+thisphase)/2;
-    thisbright += cos8((i*117)+thatphase)/2;                              // Let's munge the brightness a bit and animate it all with the phases.
+    thisbright = cubicwave8((i*13)+SEGENV.aux0)/2;
+    thisbright += cos8((i*117)+SEGENV.aux1)/2;                              // Let's munge the brightness a bit and animate it all with the phases.
     colorIndex=thisbright;
 
     if (sound * 8 * SEGMENT.intensity/256 > thisbright) {thisbright = 255;} else {thisbright = 0;}
@@ -4111,8 +4111,8 @@ uint16_t WS2812FX::mode_midnoise(void) {                  //bonfire             
 
 uint16_t WS2812FX::mode_noisemeter(void) {                                // Noisemeter. By Andrew Tuline.
 
-  static uint16_t xdist;
-  static uint16_t ydist;
+  //static uint16_t xdist;
+  //static uint16_t ydist;
 
   fade_out(SEGMENT.speed);
   int sound = getSound(SEGMENT.bass, gotSound);
@@ -4125,12 +4125,12 @@ uint16_t WS2812FX::mode_noisemeter(void) {                                // Noi
   if (maxLen >SEGLEN) maxLen = SEGLEN;
 
   for (int i=0; i<maxLen; i++) {                                          // The louder the sound, the wider the soundbar. By Andrew Tuline.
-    uint8_t index = inoise8(i*sound+xdist, ydist+i*sound);        // Get a value from the noise function. I'm using both x and y axis.
+    uint8_t index = inoise8(i*sound+SEGENV.aux0, SEGENV.aux1+i*sound);        // Get a value from the noise function. I'm using both x and y axis.
     setPixelColor(i, color_blend(SEGCOLOR(1), color_from_palette(index, false, PALETTE_SOLID_WRAP, 0), 255));
   }
 
-  xdist+=beatsin8(5,0,10);
-  ydist+=beatsin8(4,0,10);
+  SEGENV.aux0+=beatsin8(5,0,10);
+  SEGENV.aux1+=beatsin8(4,0,10);
 
   return FRAMETIME;
 } // mode_noisemeter()
@@ -4287,7 +4287,8 @@ CRGB *leds = (CRGB*) ledData;
 sound= sound*SEGMENT.intensity/10;
 else
 sound= sound * SEGMENT.intensity ;
-    leds[0] = ColorFromPalette(currentPalette, constrain(sound, 0, 255), constrain(sound, 0, 255), LINEARBLEND);
+sound = constrain(sound,0,255);
+    leds[0] = ColorFromPalette(currentPalette, sound, sound, LINEARBLEND);
     for (int i = SEGLEN - 1; i > 0; i--) {
       leds[i] = leds[i - 1];
     }    
@@ -4312,7 +4313,7 @@ sound= sound * SEGMENT.intensity ;
 // Experimenting with volume only as a fallback if no FFT.
 uint16_t WS2812FX::mode_waterfall(void) {             //ocean waves     // Waterfall. By: Andrew Tuline
  CRGB *leds = (CRGB*) ledData;
- currentPalette = OceanColors_p;
+ //currentPalette = OceanColors_p;
   EVERY_N_MILLIS_I(thistimer, 20) { // For fun, let's make the animation have a variable rate.
     uint8_t timeval = beatsin8(10, 20, 50); // Use a sinewave for the line below. Could also use peak/beat detection.
     thistimer.setPeriod(timeval); // Allows you to change how often this routine runs.
@@ -4324,8 +4325,8 @@ uint16_t WS2812FX::mode_waterfall(void) {             //ocean waves     // Water
   sound = sound * SEGMENT.intensity/10;
   else
   sound = sound * SEGMENT.intensity *4;
-  constrain(sound,0,255);
-  leds[0] = ColorFromPalette(currentPalette, constrain(sound, 0, 255), constrain(sound, 0, 255)+10, LINEARBLEND); // Put the sample into the center
+  sound = constrain(sound, 0, 255);
+  leds[0] = ColorFromPalette(currentPalette, random8(sound), sound, LINEARBLEND); // Put the sample into the center
   
   for (int i = SEGLEN - 1; i > 0; i--) { //move to the left      // Copy to the left, and let the fade do the rest.
     leds[i] = leds[i - 1];
@@ -4389,8 +4390,13 @@ uint16_t WS2812FX::mode_binmap(void) {         //slow fall     // Binmap. Scale 
       setPixelColor(i, 0);
     }
   }
-  static uint8_t dotCountLeft;
-  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 3, 1) == 0)
+    if (peak[x] == 0)
+  {
+      setPixelColor(0, 0);
+      setPixelColor(1, 0);
+  }
+
+  if (++SEGENV.aux0 % (uint8_t)map(SEGMENT.speed, 0, 255, 3, 1) == 0)
   { 
     if (peak[x] > 0)
       peak[x]--;
@@ -4744,7 +4750,7 @@ uint16_t WS2812FX::mode_spectral(void) {      //deleteit // Spectral. By Andreas
 static uint16_t x = 0;
 static uint16_t y = 0;
 static uint16_t z = 0;
-static int speed2D = 20;
+//static int speed2D = 20;
 
 // uint8_t colorLoop = 1;
 
@@ -4752,7 +4758,7 @@ static int speed2D = 20;
 // changing these values around to see how it affects the motion of the display.  The
 // higher the value of scale, the more "zoomed out" the noise iwll be.  A value
 // of 1 will be so zoomed in, you'll mostly see solid colors.
-static int scale_2d = 30; // scale is set dynamically once we've started up
+//static int scale_2d = 30; // scale is set dynamically once we've started up
 
 #endif // ESP8266
 
@@ -5390,8 +5396,8 @@ uint16_t WS2812FX::mode_visualizer(void)
       setPixelColor(i, 0);
     }
   }
-  static uint8_t dotCountLeft;
-  if (++dotCountLeft % (uint8_t)map(SEGMENT.speed, 0, 255, 7, 1) == 0)
+  //static uint8_t dotCountLeft;
+  if (++SEGENV.aux0 % (uint8_t)map(SEGMENT.speed, 0, 255, 7, 1) == 0)
   { 
     if (peak[x] > 0)
       peak[x]--;
