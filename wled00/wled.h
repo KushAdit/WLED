@@ -206,7 +206,7 @@ WLED_GLOBAL IPAddress staticSubnet  _INIT_N(((255, 255, 255, 0))); // most commo
 WLED_GLOBAL bool noWifiSleep _INIT(false);                         // disabling modem sleep modes will increase heat output and power usage, but may help with connection issues
 
 // LED CONFIG
-WLED_GLOBAL uint16_t ledCount _INIT(30);          // overcurrent prevented by ABL
+WLED_GLOBAL uint16_t ledCount _INIT(66);          // overcurrent prevented by ABL
 WLED_GLOBAL bool useRGBW      _INIT(false);       // SK6812 strips can contain an extra White channel
 WLED_GLOBAL bool turnOnAtBoot _INIT(true);        // turn on LEDs at power-up
 WLED_GLOBAL byte bootPreset   _INIT(0);           // save preset to load after power-up
@@ -215,8 +215,8 @@ WLED_GLOBAL byte col[]    _INIT_N(({ 255, 160, 0, 0 }));  // current RGB(W) prim
 WLED_GLOBAL byte colSec[] _INIT_N(({ 0, 0, 0, 0 }));      // current RGB(W) secondary color
 WLED_GLOBAL byte briS     _INIT(128);                     // default brightness
 
-WLED_GLOBAL byte soundSquelch   _INIT(10);          // default squelch value for volume reactive routines
-WLED_GLOBAL byte sampleGain     _INIT(40);           // default sample gain
+WLED_GLOBAL byte soundSquelch   _INIT(25);          // default squelch value for volume reactive routines
+WLED_GLOBAL byte sampleGain     _INIT(1);           // default sample gain
 WLED_GLOBAL uint16_t noiseFloor _INIT(100);         // default squelch value for FFT reactive routines
 WLED_GLOBAL bool digitalMic     _INIT(false);       // do we have a digital microphone or not
 
