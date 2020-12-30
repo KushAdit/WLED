@@ -5446,6 +5446,7 @@ uint16_t WS2812FX::mode_visualizer(void)
       peak[x]--;
   }
   return 0;
+}
 #ifndef WLED_DISABLE_FX_HIGH_FLASH_USE
 typedef struct TvSim {
   uint32_t totalTime = 0;
