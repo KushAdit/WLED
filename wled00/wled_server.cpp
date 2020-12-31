@@ -22,10 +22,10 @@ bool captivePortal(AsyncWebServerRequest *request)
   if (!request->hasHeader("Host")) return false;
   hostH = request->getHeader("Host")->value();
 
-  if (!isIp(hostH) && hostH.indexOf("wled.me") < 0 && hostH.indexOf(cmDNS) < 0) {
+  if (!isIp(hostH) && hostH.indexOf("animate.in") < 0 && hostH.indexOf(cmDNS) < 0) {
     DEBUG_PRINTLN("Captive portal");
     AsyncWebServerResponse *response = request->beginResponse(302);
-    response->addHeader(F("Location"), F("http://4.3.2.1"));
+    response->addHeader(F("Location"), F("http://1.1.1.1"));
     request->send(response);
     return true;
   }
