@@ -362,7 +362,7 @@ void WLED::initAP(bool resetAP)
     strcpy_P(apPass, PSTR(DEFAULT_AP_PASS));
   DEBUG_PRINT(F("Opening access point "));
   DEBUG_PRINTLN(apSSID);
-  WiFi.softAPConfig(IPAddress(4, 3, 2, 1), IPAddress(4, 3, 2, 1), IPAddress(255, 255, 255, 0));
+  WiFi.softAPConfig(IPAddress(1, 1, 1, 1), IPAddress(1, 1, 1, 1), IPAddress(255, 255, 255, 0));
   WiFi.softAP(apSSID, apPass, apChannel, apHide);
 
   if (!apActive) // start captive portal if AP active
@@ -388,7 +388,7 @@ void WLED::initAP(bool resetAP)
     #endif
     }
     dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
-    dnsServer.start(53, "*", WiFi.softAPIP());
+    dnsServer.start(53, "animate.in", WiFi.softAPIP());
   }
   apActive = true;
 }

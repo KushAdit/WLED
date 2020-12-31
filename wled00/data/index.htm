@@ -6,7 +6,7 @@
 	<meta name="theme-color" content="#222222">
 	<meta content="yes" name="apple-mobile-web-app-capable">
 	<link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAGACGAAAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAQAAAAEAgGAAAAH/P/YQAAAE1JREFUOI1j/P//PwOxgNGeAUMxE9G6cQCKDWAhpADZ2f8PMjBS3QW08QK20KaZC2gfC9hCnqouoNgARgY7zMxAyNlUdQHlXiAlO2MDAD63EVqNHAe0AAAAAElFTkSuQmCC"/>
-	<title>WLED</title>
+	<title>ANIMATE</title>
 	<script>function feedback(){}</script>
 <style>
 @font-face {
@@ -876,7 +876,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 ::-webkit-scrollbar {
-	width: 6px;
+	width: 22px;
 }
 ::-webkit-scrollbar-track {
 	background: transparent;
@@ -1032,9 +1032,9 @@ input:checked + .slider:before {
 	<input id="sliderIntensity" class="noslide" onchange="setIntensity()" oninput="updateTrail(this)" max="255" min="0" type="range" value="128" />
 	<div class="sliderdisplay"></div>
   </div>
-</div><br>
+</div>
 <div>
-	<i style='font-size:30px;'>&#9835;</i>	MUSIC- BASSY BEATS &#160;
+	<i style='font-size:30px;'>&#9835;</i>	MUSIC- BASS MODE &#160;
    <label class="switch">
 	<input type="checkbox" id="bassyBeats" onchange="setBassyB()">
 	<span class="slider round"></span>
@@ -1323,7 +1323,7 @@ function onLoad() {
 	locip = localStorage.getItem('locIp');
 	if (!locip)
 	{
-		locip = prompt("File Mode. Please enter WLED IP!");
+		locip = prompt("File Mode. Please enter IP!");
 		localStorage.setItem('locIp', locip);
 	}
 	}
@@ -1821,7 +1821,7 @@ function displayRover(i,s)
 {
 	d.getElementById('rover').style.transform = (i.live && s.lor == 0) ? "translateY(0px)":"translateY(100%)";
 	var sour = i.lip ? i.lip:""; if (sour.length > 2) sour = " from " + sour;
-	d.getElementById('lv').innerHTML = `WLED is receiving live ${i.lm} data${sour}`;
+	d.getElementById('lv').innerHTML = `Receiving live ${i.lm} data${sour}`;
 	d.getElementById('roverstar').style.display = (i.live && s.lor) ? "block":"none";
 }
 

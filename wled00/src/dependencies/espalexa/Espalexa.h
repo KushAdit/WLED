@@ -458,7 +458,7 @@ public:
     {
       EA_DEBUGLN("devType");
       body = "";
-      server->send(200, "application/json", F("[{\"success\":{\"username\":\"2WLEDHardQrI3WHYTHoMcXHgEspsM8ZZRpSKtBQr\"}}]"));
+      server->send(200, "application/json", F("[{\"success\":{\"username\":\"2ANIMATEHardQrI3WHYTHoMcXHgEspsM8ZZRpSKtBQr\"}}]"));
       return true;
     }
 
